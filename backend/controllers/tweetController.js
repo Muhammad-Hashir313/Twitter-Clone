@@ -60,7 +60,6 @@ const updateTweet = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: 'Tweet not found!' })
         }
 
-
         conn.query('UPDATE TWEETS SET TEXT = ? WHERE ID = ?', [text, id], (err) => {
             if (err) {
                 console.error(err)
