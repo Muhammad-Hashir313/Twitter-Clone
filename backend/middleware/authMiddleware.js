@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
-const User = require('../models/userModel')
+// const User = require('../models/userModel')
+const conn = require('../config/db')
 
 const protect = asyncHandler(async (req, res, next) => {
     let token
@@ -14,9 +15,16 @@ const protect = asyncHandler(async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
             // Get user from token
-            req.user = await User.findById(decoded.id).select("-password")
+            conn.query('SELECT ID, NAME, EMAIL FROM USERS WHERE ID = ?', [decoded.id], (err, results) => {
+                if (err) {
+                    console.error(err)
+                    return res.status(500).json({ message: "Error getting user!" })
+                }
 
-            next()
+                req.user = results[0]
+
+                next()
+            })
         } catch (error) {
             console.log(error)
             res.statusCode(401)

@@ -6,7 +6,8 @@ const conn = require('../config/db')
 // @route   GET /api/tweets
 // @access  Private
 const getTweets = asyncHandler(async (req, res) => {
-    conn.query('SELECT * FROM TWEETS', (err, results) => {
+
+    conn.query('SELECT * FROM TWEETS WHERE USER_ID = ?', [req.user.ID], (err, results) => {
         if (err) {
             console.error(err)
             return res.status(500).json({ message: 'Error getting tweets' })
@@ -25,7 +26,10 @@ const createTweet = asyncHandler(async (req, res) => {
         throw new Error('Please add some text')
     }
 
-    conn.query('INSERT INTO TWEETS (TEXT) VALUES (?)', [req.body.text], (err, results) => {
+    const userID = req.user.ID
+    const text = req.body.text
+
+    conn.query('INSERT INTO TWEETS (TEXT, USER_ID) VALUES (?,?)', [text, userID], (err, results) => {
         if (err) {
             console.error(err)
             return res.status(500).json({ message: 'Error creating tweet!' })
@@ -33,7 +37,8 @@ const createTweet = asyncHandler(async (req, res) => {
 
         res.status(201).json({
             id: results.insertId,
-            tweet: req.body.text
+            tweet: text,
+            user_id: userID
         })
     })
 })
@@ -47,10 +52,11 @@ const updateTweet = asyncHandler(async (req, res) => {
         throw new Error('Please add some text')
     }
 
+    const userID = req.user.ID
     const id = req.params.id
     const text = req.body.text
 
-    conn.query('SELECT * FROM TWEETS WHERE ID = ?', [id], (err, results) => {
+    conn.query('SELECT * FROM TWEETS WHERE ID = ? AND USER_ID = ?', [id, userID], (err, results) => {
         if (err) {
             console.error(err)
             return res.status(500).json({ message: 'Error checking tweet!' })
@@ -60,7 +66,7 @@ const updateTweet = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: 'Tweet not found!' })
         }
 
-        conn.query('UPDATE TWEETS SET TEXT = ? WHERE ID = ?', [text, id], (err) => {
+        conn.query('UPDATE TWEETS SET TEXT = ? WHERE ID = ? AND USER_ID = ?', [text, id, userID], (err) => {
             if (err) {
                 console.error(err)
                 return res.status(500).json({ message: 'Error updating tweets' })
@@ -68,7 +74,8 @@ const updateTweet = asyncHandler(async (req, res) => {
 
             res.status(200).json({
                 id: id,
-                text: text
+                user_id: userID,
+                text: text,
             })
         })
     })
@@ -79,9 +86,10 @@ const updateTweet = asyncHandler(async (req, res) => {
 // @access  Private
 const deleteTweet = asyncHandler(async (req, res) => {
     const id = req.params.id
+    const userID = req.user.ID
 
     // If tweet exists
-    conn.query('SELECT * FROM TWEETS WHERE ID = ?', [id], (err, results) => {
+    conn.query('SELECT * FROM TWEETS WHERE ID = ? AND USER_ID = ?', [id, userID], (err, results) => {
         if (err) {
             console.error(err)
             return res.status(500).json({ message: 'Error checking tweet!' })
@@ -92,7 +100,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
         }
 
 
-        conn.query('DELETE FROM TWEETS WHERE ID = ?', [id], (err) => {
+        conn.query('DELETE FROM TWEETS WHERE ID = ? AND USER_ID = ?', [id, userID], (err) => {
             if (err) {
                 console.error(err)
                 return res.status(500).json({ message: 'Error deleting tweet!' })

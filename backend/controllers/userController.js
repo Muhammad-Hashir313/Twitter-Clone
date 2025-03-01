@@ -40,6 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
                     id: results.insertId,
                     name: name,
                     email: email,
+                    token: generateToken(results.insertId)
                 })
             })
         } catch (error) {
@@ -77,6 +78,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 id: user.ID,
                 name: user.NAME,
                 email: email,
+                token: generateToken(user.ID)
             })
         } else {
             res.status(400)
@@ -95,7 +97,7 @@ const getAll = asyncHandler(async (req, res) => {
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d'
+        expiresIn: '7d'
     })
 }
 
