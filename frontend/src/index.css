@@ -9,3 +9,36 @@
 body {
   background-color: black;
 }
+
+.input-with-placeholder {
+  width: 250px;
+  position: relative;
+}
+
+.input-with-placeholder label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  transition: 300ms all;
+}
+
+.input-with-placeholder input {
+  width: 100%;
+  height: 40px;
+  padding: 0 15px;
+  background: #f8f8f8;
+}
+
+.input-with-placeholder input:valid+label,
+.input-with-placeholder input:focus+label {
+  height: 50%;
+  padding-left: 0;
+  transform: translateY(-100%);
+  font-size: 12px;
+  color: #777;
+}
