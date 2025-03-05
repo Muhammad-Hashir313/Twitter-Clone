@@ -1,7 +1,17 @@
+import { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import WhiteLogo from '../../x-logo/WhiteLogo.png'
-import { Link } from 'react-router-dom'
 
 const Startup = () => {
+    const { user } = useSelector((state) => state.auth)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (user) {
+            navigate('/home')
+        }
+    }, [])
 
     return (
         <>

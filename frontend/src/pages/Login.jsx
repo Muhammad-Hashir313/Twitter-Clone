@@ -1,15 +1,65 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify'
+import { useSelector, useDispatch } from 'react-redux'
+import { login, reset } from "../features/auth/authSlice";
+import Loader from '../components/Loader'
 import WhiteLogo from "../../x-logo/WhiteLogo.png";
 
 const Login = () => {
     const [isEmail, setIsEmail] = useState(false);
     const [isPassword, setIsPassword] = useState(false);
-    const [emailValue, setEmailValue] = useState("");
-    const [passwordValue, setPasswordValue] = useState("");
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    })
+
+    const { email, password } = formData
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const { user, isLoading, isSuccess, isError, message } = useSelector((state) => state.auth)
+
+    useEffect(() => {
+        if (isError) {
+            toast.error('Login Failed', message)
+        }
+
+        if (isSuccess || user) {
+            navigate('/home')
+        }
+
+        const timer = setTimeout(() => {
+            dispatch(reset())
+        }, 1000)
+
+        return () => clearTimeout(timer)
+
+    }, [user, isError, isSuccess, navigate, dispatch])
+
+    const onChange = (e) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value
+        }))
+    }
 
     const onSignIn = (e) => {
         e.preventDefault()
+
+        if (!email || !password) {
+            toast.error('Please enter all fields')
+        } else {
+            const userData = {
+                email, password
+            }
+
+            dispatch(login(userData))
+        }
+    }
+
+    if (isLoading) {
+        return <Loader />
     }
 
     return (
@@ -33,43 +83,45 @@ const Login = () => {
                             <div className="flex flex-col gap-3">
                                 <div className="relative w-100">
                                     <label
-                                        className={`absolute left-4 transition-all ${isEmail || emailValue
+                                        className={`absolute left-4 transition-all ${isEmail || email
                                             ? "text-xs -top-2 text-blue-500 bg-black px-1"
                                             : "text-gray-400 top-3"
                                             }`}
-                                        for="email"
+                                        htmlFor="email"
                                     >
                                         Email
                                     </label>
                                     <input
                                         type="email"
                                         id="email"
+                                        name="email"
                                         className="w-100 h-13 bg-transparent border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         onFocus={() => setIsEmail(true)}
                                         onBlur={() => setIsEmail(false)}
-                                        onChange={(e) => setEmailValue(e.target.value)}
-                                        value={emailValue}
+                                        onChange={onChange}
+                                        value={email}
                                         required
                                     />
                                 </div>
                                 <div className="relative w-100">
                                     <label
-                                        className={`absolute left-4 transition-all ${isPassword || passwordValue
+                                        className={`absolute left-4 transition-all ${isPassword || password
                                             ? "text-xs -top-2 text-blue-500 bg-black px-1"
                                             : "text-gray-400 top-3"
                                             }`}
-                                        for="password"
+                                        htmlFor="password"
                                     >
                                         Password
                                     </label>
                                     <input
                                         type="password"
                                         id="password"
+                                        name="password"
                                         className="w-100 h-13 bg-transparent border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         onFocus={() => setIsPassword(true)}
                                         onBlur={() => setIsPassword(false)}
-                                        onChange={(e) => setPasswordValue(e.target.value)}
-                                        value={passwordValue}
+                                        value={password}
+                                        onChange={onChange}
                                         required
                                     />
                                 </div>
