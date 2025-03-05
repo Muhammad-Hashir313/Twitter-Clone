@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import WhiteLogo from "../../x-logo/WhiteLogo.png";
-import Startup from "./Startup";
 
 const Login = () => {
     const [isEmail, setIsEmail] = useState(false);
@@ -38,11 +37,13 @@ const Login = () => {
                                             ? "text-xs -top-2 text-blue-500 bg-black px-1"
                                             : "text-gray-400 top-3"
                                             }`}
+                                        for="email"
                                     >
                                         Email
                                     </label>
                                     <input
                                         type="email"
+                                        id="email"
                                         className="w-100 h-13 bg-transparent border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         onFocus={() => setIsEmail(true)}
                                         onBlur={() => setIsEmail(false)}
@@ -57,11 +58,13 @@ const Login = () => {
                                             ? "text-xs -top-2 text-blue-500 bg-black px-1"
                                             : "text-gray-400 top-3"
                                             }`}
+                                        for="password"
                                     >
                                         Password
                                     </label>
                                     <input
                                         type="password"
+                                        id="password"
                                         className="w-100 h-13 bg-transparent border border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         onFocus={() => setIsPassword(true)}
                                         onBlur={() => setIsPassword(false)}
