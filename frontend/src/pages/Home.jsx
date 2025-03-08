@@ -29,12 +29,6 @@ const Home = () => {
 
     }, [user, navigate, isError, message, dispatch])
 
-    const onLogout = () => {
-        dispatch(logout())
-        dispatch(reset())
-        navigate('/')
-    }
-
     if (isLoading) {
         return <Loader />
     }

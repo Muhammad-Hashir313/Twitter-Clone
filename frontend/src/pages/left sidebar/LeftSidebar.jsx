@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/auth/authSlice'
 import { FaHome, FaSearch } from 'react-icons/fa'
-// import { MdOutlineExplore } from "react-icons/md";
 import { IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import WhiteLogo from '../../../x-logo/WhiteLogo.png'
@@ -14,7 +13,7 @@ const LeftSidebar = () => {
 
     useEffect(() => {
         if (!user) {
-            navigate('/login')
+            navigate('/')
         }
     }, [])
 
@@ -23,7 +22,7 @@ const LeftSidebar = () => {
     const onLogout = () => {
         dispatch(logout())
         dispatch(reset())
-        navigate('/login')
+        navigate('/')
     }
 
     return (

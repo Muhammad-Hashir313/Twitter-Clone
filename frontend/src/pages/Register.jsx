@@ -30,17 +30,17 @@ const Register = () => {
             toast.error(message)
         }
 
-        if (isSuccess || user) {
+        if (isSuccess && user) {
             navigate('/home')
+            setTimeout(() => dispatch(reset()), 1000); // Small delay to allow navigation
+            return;
         }
 
-        const timer = setTimeout(() => {
+        return () => {
             dispatch(reset())
-        }, 1000)
+        };
 
-        return () => clearTimeout(timer)
-
-    }, [user, isError, isSuccess, message, navigate, dispatch])
+    }, [isError, isSuccess, message, dispatch, user, navigate])
 
     const onChange = (e) => {
         setFormData((prevState) => ({
@@ -54,19 +54,20 @@ const Register = () => {
 
         if (!name || !email || !password || !password2) {
             toast.error('Please enter all fields')
-        } else if (password !== password2) {
-            toast.error("Passwords don't match")
-        } else {
-            const userData = {
-                name,
-                email,
-                password
-            }
-
-            if (userData) {
-                dispatch(register(userData))
-            }
+            return
         }
+        if (password !== password2) {
+            toast.error("Passwords don't match")
+            return
+        }
+
+        const userData = {
+            name,
+            email,
+            password
+        }
+
+        dispatch(register(userData))
     }
 
     if (isLoading) {
