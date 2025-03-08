@@ -1,9 +1,10 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
-import { logout, reset } from '../features/auth/authSlice'
 import { getTweets, resetTweets } from '../features/tweets/tweetSlice'
 import Loader from '../components/Loader'
+import LeftSidebar from './left sidebar/LeftSidebar'
+// import RightSidebar from './right sidebar/RightSidebar'
 
 const Home = () => {
     const navigate = useNavigate()
@@ -40,13 +41,8 @@ const Home = () => {
 
     return (
         <>
-            <div className="text-white">Home</div>
-            <button className="text-white cursor-pointer" onClick={onLogout}>Logout</button>
-            <div>
-                <ul>
-
-                </ul>
-            </div>
+            <LeftSidebar />
+            {/* <RightSidebar /> */}
         </>
     )
 }
