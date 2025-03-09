@@ -32,7 +32,7 @@ const Register = () => {
 
         if (isSuccess && user) {
             navigate('/home')
-            setTimeout(() => dispatch(reset()), 1000); // Small delay to allow navigation
+            setTimeout(() => dispatch(reset()), 1000);
             return;
         }
 
