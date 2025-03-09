@@ -25,7 +25,7 @@ const TweetForm = ({ showPopup, setShowPopup }) => {
                     </div>
                 </div>
                 <div>
-                    <div className="flex justify-between items-center border-t border-gray-700 h-10">
+                    <div className="flex justify-between items-center border-t border-gray-700 h-13">
                         <div className="flex gap-3 text-blue-500">
                             <FaImage className="cursor-pointer" />
                             <FaPlusCircle className="cursor-pointer" />
@@ -34,7 +34,7 @@ const TweetForm = ({ showPopup, setShowPopup }) => {
                             <FaMapMarkerAlt className="cursor-pointer" />
                         </div>
                         <button
-                            className={`w-16 h-8 rounded-full text-white ${!tweet.trim() ? " bg-gray-500" : "bg-blue-500 hover:bg-blue-600 cursor-pointer"}`}
+                            className={`w-16 h-9 rounded-full text-white ${!tweet.trim() ? " bg-gray-500" : "bg-blue-500 hover:bg-blue-600 cursor-pointer"}`}
                             disabled={!tweet.trim()}
                         >
                             Post

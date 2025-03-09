@@ -40,7 +40,8 @@ const registerUser = asyncHandler(async (req, res) => {
                     id: results.insertId,
                     name: name,
                     email: email,
-                    token: generateToken(results.insertId)
+                    token: generateToken(results.insertId),
+                    createdAt: user.CREATED_AT
                 })
             })
         } catch (error) {
@@ -78,7 +79,8 @@ const loginUser = asyncHandler(async (req, res) => {
                 id: user.ID,
                 name: user.NAME,
                 email: email,
-                token: generateToken(user.ID)
+                token: generateToken(user.ID),
+                createdAt: user.CREATED_AT
             })
         } else {
             res.status(400)

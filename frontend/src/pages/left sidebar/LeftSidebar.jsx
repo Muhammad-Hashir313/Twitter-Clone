@@ -26,7 +26,7 @@ const LeftSidebar = () => {
         navigate('/')
     }
 
-    const [showPopup, setShowPopup] = useState(true)
+    const [showPopup, setShowPopup] = useState(false)
 
     return (
         <>
