@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getTweets, resetTweets } from "../features/tweets/tweetSlice";
+import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import LeftSidebar from "./left sidebar/LeftSidebar";
 import RightSidebar from './right sidebar/RightSidebar'
@@ -10,7 +9,6 @@ import TweetForm from "../components/TweetForm";
 
 const Home = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
     const { tweets, isError, isLoading, message } = useSelector((state) => state.tweets);
 
@@ -25,12 +23,7 @@ const Home = () => {
             navigate("/login");
         }
 
-        dispatch(getTweets());
-
-        return () => {
-            dispatch(resetTweets());
-        };
-    }, [user, navigate, isError, message, dispatch]);
+    }, [user, navigate, isError, message]);
 
     if (isLoading) {
         return <Loader />;
@@ -42,7 +35,7 @@ const Home = () => {
             <RightSidebar />
             <div className="relative h-13 left-80 flex border-b border-white/20  w-159 text-white">
                 <div
-                    className={`flex flex-col w-1/2 text-center py-3 font-bold relative cursor-pointer hover:bg-white/10 ${activeTab === "For You" ? "text-white" : "text-gray-500"
+                    className={`flex flex-col w-1/2 text-center justify-center font-bold relative cursor-pointer hover:bg-white/10 ${activeTab === "For You" ? "text-white" : "text-gray-500"
                         }`}
                     onClick={() => setActiveTab("For You")}
                 >
@@ -52,7 +45,7 @@ const Home = () => {
                     )}
                 </div>
                 <div
-                    className={`w-1/2 text-center py-3 font-bold relative cursor-pointer hover:bg-white/10 ${activeTab === "Following" ? "text-white" : "text-gray-500"
+                    className={`flex flex-col w-1/2 text-center justify-center font-bold relative cursor-pointer hover:bg-white/10 ${activeTab === "Following" ? "text-white" : "text-gray-500"
                         }`}
                     onClick={() => setActiveTab("Following")}
                 >

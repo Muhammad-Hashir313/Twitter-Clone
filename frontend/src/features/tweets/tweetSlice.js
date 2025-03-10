@@ -14,7 +14,8 @@ export const getTweets = createAsyncThunk('tweets/getAll', async (_, thunkAPI) =
         const token = await thunkAPI.getState().auth.user.token
         return await tweetService.getTweets(token)
     } catch (error) {
-
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
     }
 })
 
