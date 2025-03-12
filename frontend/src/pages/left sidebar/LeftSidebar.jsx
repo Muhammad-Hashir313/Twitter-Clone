@@ -70,13 +70,13 @@ const LeftSidebar = () => {
                     </div>
                 </div>
             </div>
-            {showPopup && (
+            {/* {showPopup && (
                 <div className="fixed inset-0 flex justify-center bg-gray-500/40">
                     <div className='relative -left-10 top-30'>
                         <TweetForm showPopup={showPopup} setShowPopup={setShowPopup} />
                     </div>
                 </div >
-            )}
+            )} */}
         </>
     );
 };

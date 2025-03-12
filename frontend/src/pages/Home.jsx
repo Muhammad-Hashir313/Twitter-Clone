@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify'
 import Loader from "../components/Loader";
 import LeftSidebar from "./left sidebar/LeftSidebar";
 import RightSidebar from './right sidebar/RightSidebar'
@@ -10,13 +11,13 @@ import TweetForm from "../components/TweetForm";
 const Home = () => {
     const navigate = useNavigate();
     const { user } = useSelector((state) => state.auth);
-    const { tweets, isError, isLoading, message } = useSelector((state) => state.tweets);
+    const { isError, isLoading, message } = useSelector((state) => state.tweets);
 
     const [activeTab, setActiveTab] = useState("For You");
 
     useEffect(() => {
         if (isError) {
-            console.log(message);
+            toast.error(message);
         }
 
         if (!user) {

@@ -19,6 +19,30 @@ export const getTweets = createAsyncThunk('tweets/getAll', async (_, thunkAPI) =
     }
 })
 
+// Create a tweet
+export const createTweet = createAsyncThunk('tweets/create', async (goalData, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await tweetService.createTweet(goalData, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Delete a tweet
+export const deleteTweet = createAsyncThunk('tweets/delete', async (id, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await tweetService.deleteTweet(id, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const tweetSlice = createSlice({
     name: 'tweets',
     initialState,
@@ -36,6 +60,32 @@ export const tweetSlice = createSlice({
                 state.tweets = action.payload
             })
             .addCase(getTweets.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(createTweet.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(createTweet.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.tweets.push(action.payload)
+            })
+            .addCase(createTweet.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(deleteTweet.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteTweet.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.tweets = state.tweets.filter((tweet) => tweet.id !== action.payload.id)
+            })
+            .addCase(deleteTweet.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload

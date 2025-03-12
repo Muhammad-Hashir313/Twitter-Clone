@@ -15,8 +15,36 @@ const getTweets = async (token) => {
     return response.data
 }
 
+// Create a tweet
+const createTweet = async (goalData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post(API_URL, goalData, config)
+
+    return response.data
+}
+
+// Delete a tweet
+const deleteTweet = async (tweetID, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.delete(API_URL + tweetID, config)
+
+    return response.data
+}
+
 const tweetService = {
-    getTweets
+    getTweets,
+    createTweet,
+    deleteTweet
 }
 
 export default tweetService
