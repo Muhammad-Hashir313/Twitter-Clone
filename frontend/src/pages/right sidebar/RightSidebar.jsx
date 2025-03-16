@@ -1,6 +1,6 @@
 const RightSidebar = () => {
     return (
-        <div className="fixed right-21 text-white w-80 h-full border-l border-white/20">
+        <div className="fixed right-17 text-white w-80 h-full border-l border-white/20">
 
         </div>
     );

@@ -111,9 +111,20 @@ const deleteTweet = asyncHandler(async (req, res) => {
     })
 })
 
+// @desc    Like a Tweet
+// @route   POST /api/tweets/like/:id
+// @access  Private
+const likeTweet = asyncHandler(async (req, res) => {
+    const id = req.params.id
+
+    res.json({ message: `Like ${id}` })
+})
+
+
 module.exports = {
     getTweets,
     createTweet,
     updateTweet,
-    deleteTweet
+    deleteTweet,
+    likeTweet
 }

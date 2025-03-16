@@ -36,13 +36,22 @@ const registerUser = asyncHandler(async (req, res) => {
                     return res.status(500).json({ message: 'Error registering user!' })
                 }
 
-                res.status(201).json({
-                    id: results.insertId,
-                    name: name,
-                    email: email,
-                    token: generateToken(results.insertId),
-                    createdAt: user.CREATED_AT
+                conn.query('SELECT * FROM USERS WHERE ID = ?', [results.insertId], (err, results) => {
+                    if (err) {
+                        console.error(err)
+                        return res.status(500).json({ message: 'Error getting user!' })
+                    }
+
+                    const newUser = {
+                        id: results.insertId,
+                        name: name,
+                        email: email,
+                        token: generateToken(results.insertId),
+                        createdAt: results[0].CREATED_AT
+                    }
+                    res.status(201).json(newUser)
                 })
+
             })
         } catch (error) {
             console.error(error)
