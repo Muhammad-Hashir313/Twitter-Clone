@@ -43,6 +43,16 @@ export const deleteTweet = createAsyncThunk('tweets/delete', async (id, thunkAPI
     }
 })
 
+// Get Likes
+export const getLikes = createAsyncThunk('tweets/getLikes', async (id, thunkAPI) => {
+    try {
+        return await tweetService.deleteTweet(id, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 export const tweetSlice = createSlice({
     name: 'tweets',
     initialState,

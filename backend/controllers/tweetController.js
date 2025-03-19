@@ -2,7 +2,22 @@ const asyncHandler = require('express-async-handler')
 // const Tweet = require('../models/tweetModel')
 const conn = require('../config/db')
 
-// @desc    Get Tweets
+// // @desc    Get Tweets of user
+// // @route   GET /api/tweets
+// // @access  Private
+// const getAllTweets = asyncHandler(async (req, res) => {
+
+//     conn.query('SELECT * FROM TWEETS', (err, results) => {
+//         if (err) {
+//             console.error(err)
+//             return res.status(500).json({ message: 'Error getting tweets' })
+//         }
+
+//         res.status(200).json(results)
+//     })
+// })
+
+// @desc    Get Tweets of user
 // @route   GET /api/tweets
 // @access  Private
 const getTweets = asyncHandler(async (req, res) => {
@@ -204,27 +219,56 @@ const unlikeTweet = asyncHandler(async (req, res) => {
 // @route   GET /api/tweets/:id/comment
 // @access  Private
 const getComments = asyncHandler(async (req, res) => {
-    res.status(200).json({ message: "Get Tweets" })
+    const tweet_id = req.params.id
+
+    conn.query('SELECT * FROM COMMENTS WHERE TWEET_ID = ?', [tweet_id], (err, results) => {
+        if (err) {
+            console.error(err)
+            res.status(500).json({ message: 'Error getting comments' })
+        }
+
+        res.status(200).json(results)
+    })
 })
 
 // @desc    Comment on a Tweet
 // @route   POST /api/tweets/:id/comment
 // @access  Private
 const addComment = asyncHandler(async (req, res) => {
-    const data = {
-        content: req.body.content,
-        tweet_id: req.params.id,
-        user_id: req.user.ID
-    }
+    const tweet_id = req.params.id
+    const user_id = req.user.ID
+    const text = req.body.content
 
-    res.status(200).json(data)
+    conn.query('INSERT INTO COMMENTS (CONTENT, USER_ID, TWEET_ID) VALUES (?,?,?)', [text, user_id, tweet_id], (err, results) => {
+        if (err) {
+            console.error(err)
+            res.status(500).json({ message: "Issue adding comment!" })
+        }
+
+        res.status(201).json({
+            id: results.insertId,
+            content: text,
+            user_id: user_id,
+            tweet_id: tweet_id
+        })
+    })
 })
 
 // @desc    Delete a comment
 // @route   DELETE /api/tweets/:id/comment/:comment_id
 // @access  Private
 const deleteComment = asyncHandler(async (req, res) => {
-    res.status(200).json({ id: req.params.comment_id })
+    const tweet_id = req.params.id
+    const comment_id = req.params.comment_id
+
+    conn.query('DELETE FROM COMMENTS WHERE TWEET_ID = ? AND COMMENT_ID = ?', [tweet_id, comment_id], (err, results) => {
+        if (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Error deleting comment!' })
+        }
+
+        res.status(200).json({ id: comment_id })
+    })
 })
 
 

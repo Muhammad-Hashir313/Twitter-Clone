@@ -5,7 +5,8 @@ const { getTweets, createTweet, updateTweet, deleteTweet, getLikes, likeTweet, u
 
 router.route('/').get(protect, getTweets).post(protect, createTweet)
 router.route('/:id').put(protect, updateTweet).delete(protect, deleteTweet)
-router.route('/:id/like').get(getLikes).post(protect, likeTweet)
+router.route('/:id/like').post(protect, likeTweet)
+router.route('/like').get(getLikes)
 router.route('/:id/unlike').delete(protect, unlikeTweet)
 router.route('/:id/comment').get(getComments).post(protect, addComment)
 router.route('/:id/comment/:comment_id').delete(protect, deleteComment)
