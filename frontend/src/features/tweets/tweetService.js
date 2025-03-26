@@ -41,10 +41,24 @@ const deleteTweet = async (tweetID, token) => {
     return response.data
 }
 
+//Get Likes
+const getLikes = async (tweetID, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + 'like', config)
+
+    return response.data
+}
+
 const tweetService = {
     getTweets,
     createTweet,
-    deleteTweet
+    deleteTweet,
+    getLikes
 }
 
 export default tweetService
