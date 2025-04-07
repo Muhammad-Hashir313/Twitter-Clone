@@ -49,7 +49,33 @@ const getLikes = async (tweetID, token) => {
         }
     }
 
-    const response = await axios.get(API_URL + 'like', config)
+    const response = await axios.get(API_URL + tweetID + '/like', config)
+
+    return response.data
+}
+
+// Like a tweet
+const likeTweet = async (tweetID, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post(API_URL + tweetID + '/like', {}, config)
+
+    return response.data
+}
+
+// Unlike a tweet
+const unlikeTweet = async (tweetID, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.delete(API_URL + tweetID + '/unlike', config)
 
     return response.data
 }
@@ -58,7 +84,9 @@ const tweetService = {
     getTweets,
     createTweet,
     deleteTweet,
-    getLikes
+    getLikes,
+    likeTweet,
+    unlikeTweet
 }
 
 export default tweetService

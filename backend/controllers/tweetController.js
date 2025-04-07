@@ -129,16 +129,26 @@ const deleteTweet = asyncHandler(async (req, res) => {
 // @desc    Get Likes on a tweet
 // @route   GET /api/tweets/:id/like
 // @access  PUBLIC
-const getLikes = asyncHandler(async (req, res) => {
-    conn.query("SELECT COUNT(*) AS like_count FROM LIKES WHERE TWEET_ID = ?", [req.params.id], (err, results) => {
-        if (err) {
-            console.error(err)
-            res.status(500).json({ message: 'Error getting likes' })
-        }
+const getLikes = async (req, res) => {
+    const tweetId = req.params.id;
+    conn.query(
+        `SELECT COUNT(*) AS likeCount 
+             FROM LIKES 
+             WHERE TWEET_ID = ?`,
+        [tweetId], (err, results) => {
+            if (err) {
+                console.error(err); // Log the error for debugging
+                res.status(500).json({ error: 'Something went wrong.' });
+            }
 
-        res.json({ likes: results[0].like_count })
-    })
-})
+            res.json({
+                likes: results[0].likeCount
+            });
+        }
+    );
+
+};
+
 
 // @desc    Like a Tweet
 // @route   POST /api/tweets/:id/like

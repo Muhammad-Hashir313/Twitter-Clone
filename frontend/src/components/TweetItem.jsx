@@ -1,13 +1,42 @@
-// import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaRegComment, FaRetweet, FaRegHeart, FaUser, FaTrash } from "react-icons/fa";
 import { FiShare } from "react-icons/fi";
-import { useDispatch } from "react-redux";
-import { deleteTweet, getTweets } from '../features/tweets/tweetSlice'
-import { useEffect } from "react";
+import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTweet, getTweets, getLikes, likeTweet, unlikeTweet } from '../features/tweets/tweetSlice'
 
 
 const TweetItem = ({ user, tweet, date }) => {
     const dispatch = useDispatch()
+    const { isError, message } = useSelector(state => state.tweets)
+
+    const [likesCount, setLikesCount] = useState(0)
+    const [liked, setLiked] = useState(false)
+
+    useEffect(() => {
+        if (isError) {
+            toast.error(message)
+        }
+
+        const fetchLikes = async () => {
+            const res = await dispatch(getLikes(tweet.ID)).unwrap()
+            setLikesCount(res.likes)
+        }
+
+        fetchLikes()
+
+    }, [dispatch, tweet.ID])
+
+    const toggleLike = async () => {
+        if (liked) {
+            await dispatch(unlikeTweet(tweet.ID)).unwrap()
+            setLikesCount(prev => prev - 1)
+        } else {
+            await dispatch(likeTweet(tweet.ID)).unwrap()
+            setLikesCount(prev => prev + 1)
+        }
+        setLiked(!liked)
+    }
 
     return (
         <div className="hover:bg-white/10 transition cursor-pointer w-160.5 h-full relative top-3">
@@ -41,8 +70,8 @@ const TweetItem = ({ user, tweet, date }) => {
                         <div className="flex items-center gap-1 hover:text-green-400 cursor-pointer">
                             <FaRetweet /> <span>0</span>
                         </div>
-                        <div className="flex items-center gap-1 hover:text-red-400 cursor-pointer">
-                            <FaRegHeart /> <span>0</span>
+                        <div onClick={toggleLike} className="flex items-center gap-1 hover:text-red-400 cursor-pointer">
+                            {liked ? <FaHeart color="red" /> : <FaRegHeart />} <span>{likesCount}</span>
                         </div>
                         <div className="hover:text-blue-400 cursor-pointer">
                             <FiShare />
