@@ -3,6 +3,7 @@ import tweetService from './tweetService'
 
 const initialState = {
     tweets: [],
+    tweetLikes: {}, // new: { [tweetId]: { likes: number, liked: boolean } }
     isLoading: false,
     isError: false,
     isSuccess: false,
@@ -155,6 +156,10 @@ export const tweetSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+            })
+            .addCase(getLikes.fulfilled, (state, action) => {
+                const { tweet_id, likes, liked } = action.payload;
+                state.tweetLikes[tweet_id] = { likes, liked };
             })
     }
 })

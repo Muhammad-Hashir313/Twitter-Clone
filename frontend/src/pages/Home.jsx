@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-// import { toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { format } from 'date-fns'
 import Loader from "../components/Loader";
 import LeftSidebar from "./left sidebar/LeftSidebar";
@@ -19,7 +19,7 @@ const Home = () => {
 
     useEffect(() => {
         if (isError) {
-            console.log(message);
+            toast.error(message);
         }
 
         if (!user) {

@@ -128,26 +128,30 @@ const deleteTweet = asyncHandler(async (req, res) => {
 
 // @desc    Get Likes on a tweet
 // @route   GET /api/tweets/:id/like
-// @access  PUBLIC
-const getLikes = async (req, res) => {
+// @access  Private
+const getLikes = asyncHandler(async (req, res) => {
     const tweetId = req.params.id;
+    const userId = req.user.ID;
+
     conn.query(
-        `SELECT COUNT(*) AS likeCount 
-             FROM LIKES 
-             WHERE TWEET_ID = ?`,
-        [tweetId], (err, results) => {
+        `SELECT COUNT(*) AS likeCount,
+                EXISTS(SELECT 1 FROM LIKES WHERE USER_ID = ? AND TWEET_ID = ?) AS liked
+         FROM LIKES
+         WHERE TWEET_ID = ?`,
+        [userId, tweetId, tweetId],
+        (err, results) => {
             if (err) {
-                console.error(err); // Log the error for debugging
-                res.status(500).json({ error: 'Something went wrong.' });
+                console.error(err);
+                return res.status(500).json({ error: 'Something went wrong.' });
             }
 
             res.json({
-                likes: results[0].likeCount
+                likes: results[0].likeCount,
+                liked: results[0].liked === 1 // MySQL returns 0/1
             });
         }
     );
-
-};
+});
 
 
 // @desc    Like a Tweet

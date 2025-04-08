@@ -54,7 +54,7 @@ const deleteTweet = async (tweetID, token) => {
     return response.data
 }
 
-//Get Likes
+// Get Likes
 const getLikes = async (tweetID, token) => {
     const config = {
         headers: {
@@ -62,9 +62,9 @@ const getLikes = async (tweetID, token) => {
         }
     }
 
-    const response = await axios.get(API_URL + tweetID + '/like', config)
+    const res = await axios.get(API_URL + tweetID + '/like', config)
 
-    return response.data
+    return { tweet_id: tweetID, ...res.data }
 }
 
 // Like a tweet
