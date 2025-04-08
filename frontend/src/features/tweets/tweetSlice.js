@@ -9,7 +9,20 @@ const initialState = {
     message: ''
 }
 
-export const getTweets = createAsyncThunk('tweets/getAll', async (_, thunkAPI) => {
+// Get Tweets
+export const getAllTweets = createAsyncThunk('tweets/getAll', async (_, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await tweetService.getAllTweets(token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get user tweets
+export const getTweets = createAsyncThunk('tweets/get', async (_, thunkAPI) => {
     try {
         const token = await thunkAPI.getState().auth.user.token
         return await tweetService.getTweets(token)
@@ -84,6 +97,19 @@ export const tweetSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(getAllTweets.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getAllTweets.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.tweets = action.payload
+            })
+            .addCase(getAllTweets.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
             .addCase(getTweets.pending, (state) => {
                 state.isLoading = true
             })

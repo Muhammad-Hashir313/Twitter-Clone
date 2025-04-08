@@ -2,7 +2,20 @@ import axios from 'axios'
 
 const API_URL = '/api/tweets/'
 
-// Get tweets
+// Get All Tweets
+const getAllTweets = async (token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + 'all', config)
+
+    return response.data
+}
+
+// Get user tweets
 const getTweets = async (token) => {
     const config = {
         headers: {
@@ -81,6 +94,7 @@ const unlikeTweet = async (tweetID, token) => {
 }
 
 const tweetService = {
+    getAllTweets,
     getTweets,
     createTweet,
     deleteTweet,

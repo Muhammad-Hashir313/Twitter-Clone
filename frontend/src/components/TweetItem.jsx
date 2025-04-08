@@ -40,6 +40,7 @@ const TweetItem = ({ user, tweet, date }) => {
 
     return (
         <div className="hover:bg-white/10 transition cursor-pointer w-160.5 h-full relative top-3">
+            <div className="h-2"></div>
             <div className="border-b border-white/20 flex gap-3">
                 {/* Profile Picture */}
                 <div className="relative left-1">

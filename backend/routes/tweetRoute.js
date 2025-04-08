@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const protect = require('../middleware/authMiddleware')
-const { getTweets, createTweet, updateTweet, deleteTweet, getLikes, likeTweet, unlikeTweet, getComments, addComment, deleteComment } = require('../controllers/tweetController')
+const { getAllTweets, getTweets, createTweet, updateTweet, deleteTweet, getLikes, likeTweet, unlikeTweet, getComments, addComment, deleteComment } = require('../controllers/tweetController')
 
+router.route('/all').get(protect, getAllTweets)
 router.route('/').get(protect, getTweets).post(protect, createTweet)
 router.route('/:id').put(protect, updateTweet).delete(protect, deleteTweet)
 router.route('/:id/like').post(protect, likeTweet).get(protect, getLikes)

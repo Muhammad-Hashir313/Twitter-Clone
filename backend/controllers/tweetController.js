@@ -2,20 +2,20 @@ const asyncHandler = require('express-async-handler')
 // const Tweet = require('../models/tweetModel')
 const conn = require('../config/db')
 
-// // @desc    Get Tweets of user
-// // @route   GET /api/tweets
-// // @access  Private
-// const getAllTweets = asyncHandler(async (req, res) => {
+// @desc    Get Tweets of user
+// @route   GET /api/tweets
+// @access  Private
+const getAllTweets = asyncHandler(async (req, res) => {
 
-//     conn.query('SELECT * FROM TWEETS', (err, results) => {
-//         if (err) {
-//             console.error(err)
-//             return res.status(500).json({ message: 'Error getting tweets' })
-//         }
+    conn.query('SELECT * FROM TWEETS', (err, results) => {
+        if (err) {
+            console.error(err)
+            return res.status(500).json({ message: 'Error getting tweets' })
+        }
 
-//         res.status(200).json(results)
-//     })
-// })
+        res.status(200).json(results)
+    })
+})
 
 // @desc    Get Tweets of user
 // @route   GET /api/tweets
@@ -283,6 +283,7 @@ const deleteComment = asyncHandler(async (req, res) => {
 
 
 module.exports = {
+    getAllTweets,
     getTweets,
     createTweet,
     updateTweet,
