@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { format } from 'date-fns'
 import Loader from "../components/Loader";
 import LeftSidebar from "./left sidebar/LeftSidebar";
-import RightSidebar from './right sidebar/RightSidebar'
+// import RightSidebar from './right sidebar/RightSidebar'
 import TweetForm from "../components/TweetForm";
 import TweetItem from "../components/TweetItem";
 import { getAllTweets, resetTweets } from '../features/tweets/tweetSlice'
@@ -45,7 +45,7 @@ const Home = () => {
     return (
         <>
             <LeftSidebar />
-            <RightSidebar />
+            {/* <RightSidebar /> */}
             <div className="relative h-13 left-80 flex border-b border-white/20  w-159 text-white">
                 <div
                     className={`flex flex-col w-1/2 text-center justify-center font-bold relative cursor-pointer hover:bg-white/10 ${activeTab === "For You" ? "text-white" : "text-gray-500"
@@ -72,13 +72,10 @@ const Home = () => {
                 <>
                     <TweetForm />
                     {/* Tweets */}
-                    <div className='relative left-80 top-3 text-white'>
+                    <div className='relative left-80 text-white'>
                         {
                             tweets.map((tweet) => (
-                                <>
-
-                                    <TweetItem user={user} tweet={tweet} date={formattedDate} />
-                                </>
+                                <TweetItem tweet={tweet} date={formattedDate} key={tweet.ID} />
                             ))
                         }
                     </div>

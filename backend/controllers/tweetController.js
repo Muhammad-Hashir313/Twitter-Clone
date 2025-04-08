@@ -7,7 +7,7 @@ const conn = require('../config/db')
 // @access  Private
 const getAllTweets = asyncHandler(async (req, res) => {
 
-    conn.query('SELECT * FROM TWEETS', (err, results) => {
+    conn.query('SELECT T.*, U.NAME FROM TWEETS T JOIN USERS U ON T.USER_ID = U.ID', (err, results) => {
         if (err) {
             console.error(err)
             return res.status(500).json({ message: 'Error getting tweets' })

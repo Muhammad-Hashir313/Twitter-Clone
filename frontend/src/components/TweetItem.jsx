@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { FaRegComment, FaRetweet, FaRegHeart, FaUser, FaTrash } from "react-icons/fa";
+import { FaRegComment, FaRetweet, FaRegHeart, FaHeart, FaUser, FaTrash } from "react-icons/fa";
 import { FiShare } from "react-icons/fi";
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTweet, getTweets, getLikes, likeTweet, unlikeTweet } from '../features/tweets/tweetSlice'
 
 
-const TweetItem = ({ user, tweet, date }) => {
+const TweetItem = ({ tweet, date }) => {
     const dispatch = useDispatch()
     const { isError, message } = useSelector(state => state.tweets)
+    const user = useSelector(state => state.auth.user)
 
     const [likesCount, setLikesCount] = useState(0)
-    const [liked, setLiked] = useState(false)
 
     useEffect(() => {
         if (isError) {
@@ -27,17 +27,6 @@ const TweetItem = ({ user, tweet, date }) => {
 
     }, [dispatch, tweet.ID])
 
-    const toggleLike = async () => {
-        if (liked) {
-            await dispatch(unlikeTweet(tweet.ID)).unwrap()
-            setLikesCount(prev => prev - 1)
-        } else {
-            await dispatch(likeTweet(tweet.ID)).unwrap()
-            setLikesCount(prev => prev + 1)
-        }
-        setLiked(!liked)
-    }
-
     return (
         <div className="hover:bg-white/10 transition cursor-pointer w-160.5 h-full relative top-3">
             <div className="h-2"></div>
@@ -52,12 +41,12 @@ const TweetItem = ({ user, tweet, date }) => {
                     {/* User Info */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="font-bold">{user.name}</span>
-                            <span className="text-gray-400">@{user.name} · {date}</span>
+                            <span className="font-bold">{tweet.NAME}</span>
+                            <span className="text-gray-400">@{tweet.NAME} · {date}</span>
                         </div>
-                        <span onClick={() => dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getTweets()))} className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2">
+                        {tweet.NAME == user.name && <span onClick={() => dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getTweets()))} className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2">
                             <FaTrash size={10} />
-                        </span>
+                        </span>}
                     </div>
 
                     {/* Tweet Text */}
@@ -71,8 +60,8 @@ const TweetItem = ({ user, tweet, date }) => {
                         <div className="flex items-center gap-1 hover:text-green-400 cursor-pointer">
                             <FaRetweet /> <span>0</span>
                         </div>
-                        <div onClick={toggleLike} className="flex items-center gap-1 hover:text-red-400 cursor-pointer">
-                            {liked ? <FaHeart color="red" /> : <FaRegHeart />} <span>{likesCount}</span>
+                        <div className="flex items-center gap-1 hover:text-red-400 cursor-pointer">
+                            <FaRegHeart /><span>{likesCount}</span>
                         </div>
                         <div className="hover:text-blue-400 cursor-pointer">
                             <FiShare />
