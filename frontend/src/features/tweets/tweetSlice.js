@@ -71,6 +71,7 @@ export const getLikes = createAsyncThunk('tweets/getLikes', async (id, thunkAPI)
 export const likeTweet = createAsyncThunk('tweets/like', async (id, thunkAPI) => {
     try {
         const token = await thunkAPI.getState().auth.user.token
+
         return await tweetService.likeTweet(id, token)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
@@ -82,6 +83,7 @@ export const likeTweet = createAsyncThunk('tweets/like', async (id, thunkAPI) =>
 export const unlikeTweet = createAsyncThunk('tweets/unlike', async (id, thunkAPI) => {
     try {
         const token = await thunkAPI.getState().auth.user.token
+
         return await tweetService.unlikeTweet(id, token)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()

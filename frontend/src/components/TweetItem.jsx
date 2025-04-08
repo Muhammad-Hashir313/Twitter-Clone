@@ -12,6 +12,7 @@ const TweetItem = ({ tweet, date }) => {
     const user = useSelector(state => state.auth.user)
 
     const [likesCount, setLikesCount] = useState(0)
+    const [liked, setLiked] = useState(false)
 
     useEffect(() => {
         if (isError) {
@@ -20,12 +21,18 @@ const TweetItem = ({ tweet, date }) => {
 
         const fetchLikes = async () => {
             const res = await dispatch(getLikes(tweet.ID)).unwrap()
+            console.log(res);
+
             setLikesCount(res.likes)
         }
 
         fetchLikes()
 
     }, [dispatch, tweet.ID])
+
+    const toggle = () => {
+
+    }
 
     return (
         <div className="hover:bg-white/10 transition cursor-pointer w-160.5 h-full relative top-3">
