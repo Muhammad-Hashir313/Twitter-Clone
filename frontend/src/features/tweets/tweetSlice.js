@@ -4,6 +4,7 @@ import tweetService from './tweetService'
 const initialState = {
     tweets: [],
     tweetLikes: {}, // new: { [tweetId]: { likes: number, liked: boolean } }
+    comments: {},
     isLoading: false,
     isError: false,
     isSuccess: false,
@@ -92,6 +93,42 @@ export const unlikeTweet = createAsyncThunk('tweets/unlike', async (id, thunkAPI
     }
 })
 
+// Get comments for a tweet
+export const getComments = createAsyncThunk('tweets/getComments', async (tweetId, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await tweetService.getComments(token, tweetId);
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+// Add a comment
+export const addComment = createAsyncThunk('tweets/addComment', async ({ tweetId, content }, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await tweetService.addComment({ token, tweetId, content });
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+// Delete a comment
+export const deleteComment = createAsyncThunk('tweets/deleteComment', async ({ tweetId, commentId }, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await tweetService.deleteComment({ token, tweetId, commentId });
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 export const tweetSlice = createSlice({
     name: 'tweets',
     initialState,
@@ -160,6 +197,23 @@ export const tweetSlice = createSlice({
             .addCase(getLikes.fulfilled, (state, action) => {
                 const { tweet_id, likes, liked } = action.payload;
                 state.tweetLikes[tweet_id] = { likes, liked };
+            })
+            .addCase(getComments.fulfilled, (state, action) => {
+                const { tweetId, comments } = action.payload;
+                state.comments[tweetId] = comments;
+            })
+            .addCase(addComment.fulfilled, (state, action) => {
+                const { tweet_id, ...rest } = action.payload;
+                if (!state.comments[tweet_id]) {
+                    state.comments[tweet_id] = [];
+                }
+                state.comments[tweet_id].unshift({ tweet_id, ...rest });
+            })
+            .addCase(deleteComment.fulfilled, (state, action) => {
+                const { tweetId, commentId } = action.payload;
+                if (state.comments[tweetId]) {
+                    state.comments[tweetId] = state.comments[tweetId].filter(c => c.COMMENT_ID !== commentId);
+                }
             })
     }
 })

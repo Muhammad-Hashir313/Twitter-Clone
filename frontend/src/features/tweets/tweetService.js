@@ -93,6 +93,42 @@ const unlikeTweet = async (tweetID, token) => {
     return response.data
 }
 
+// Get comments for a tweet
+const getComments = async (token, tweetId) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const res = await axios.get(`${API_URL}${tweetId}/comment`, config);
+    return { tweetId, comments: res.data };
+};
+
+// Add a comment to a tweet
+const addComment = async ({ token, tweetId, content }) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const res = await axios.post(`${API_URL}${tweetId}/comment`, { content }, config);
+    return res.data;
+};
+
+// Delete a comment
+const deleteComment = async ({ token, tweetId, commentId }) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    await axios.delete(`${API_URL}${tweetId}/comment/${commentId}`, config);
+    return { tweetId, commentId };
+};
+
 const tweetService = {
     getAllTweets,
     getTweets,
@@ -100,7 +136,10 @@ const tweetService = {
     deleteTweet,
     getLikes,
     likeTweet,
-    unlikeTweet
+    unlikeTweet,
+    getComments,
+    addComment,
+    deleteComment,
 }
 
 export default tweetService

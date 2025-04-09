@@ -235,7 +235,7 @@ const unlikeTweet = asyncHandler(async (req, res) => {
 const getComments = asyncHandler(async (req, res) => {
     const tweet_id = req.params.id
 
-    conn.query('SELECT * FROM COMMENTS WHERE TWEET_ID = ?', [tweet_id], (err, results) => {
+    conn.query('SELECT C.*, U.NAME FROM COMMENTS C JOIN USERS U ON C.USER_ID = U.ID WHERE C.TWEET_ID = ?', [tweet_id], (err, results) => {
         if (err) {
             console.error(err)
             res.status(500).json({ message: 'Error getting comments' })
