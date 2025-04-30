@@ -175,7 +175,7 @@ const Profile = () => {
                 <div className='relative left-80 top-9'>
                     {tweets.length > 0 ? (
                         tweets.map((tweet) => (
-                            <TweetItem tweet={tweet} date={getTweetDate(tweet.CREATED_AT)} />
+                            <TweetItem tweet={tweet} user={user.name} date={getTweetDate(tweet.CREATED_AT)} />
                         ))
                     ) : (<h1>Nothing to show</h1>)}
                 </div>

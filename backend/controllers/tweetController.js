@@ -3,10 +3,9 @@ const asyncHandler = require('express-async-handler')
 const conn = require('../config/db')
 
 // @desc    Get Tweets of user
-// @route   GET /api/tweets
+// @route   GET /api/tweets/all
 // @access  Private
 const getAllTweets = asyncHandler(async (req, res) => {
-
     conn.query('SELECT T.*, U.NAME FROM TWEETS T JOIN USERS U ON T.USER_ID = U.ID', (err, results) => {
         if (err) {
             console.error(err)

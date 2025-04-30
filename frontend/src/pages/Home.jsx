@@ -15,10 +15,11 @@ const Home = () => {
     const navigate = useNavigate()
 
     const { user } = useSelector(state => state.auth)
+    const error = useSelector(state => state.auth.isError)
     const { tweets, isError, isLoading, message } = useSelector(state => state.tweets);
 
     useEffect(() => {
-        if (isError) {
+        if (isError || error) {
             toast.error(message);
         }
 
@@ -75,7 +76,9 @@ const Home = () => {
                     <div className='relative left-80 text-white'>
                         {
                             tweets.map((tweet) => (
-                                <TweetItem tweet={tweet} date={formattedDate} key={tweet.ID} />
+                                <>
+                                    <TweetItem tweet={tweet} user={tweet.NAME} date={formattedDate} key={tweet.ID} />
+                                </>
                             ))
                         }
                     </div>

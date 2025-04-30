@@ -20,9 +20,8 @@ import {
     deleteComment
 } from '../features/tweets/tweetSlice';
 
-const TweetItem = ({ tweet, date }) => {
+const TweetItem = ({ tweet, user, date }) => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.auth.user);
 
     // LIKES
     const tweetLikes = useSelector(state => state.tweets.tweetLikes[tweet.ID]) || {};
@@ -76,10 +75,10 @@ const TweetItem = ({ tweet, date }) => {
                     {/* User Info */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="font-bold">{user.name}</span>
-                            <span className="text-gray-400">@{user.name} · {date}</span>
+                            <span className="font-bold">{user}</span>
+                            <span className="text-gray-400">@{user} · {date}</span>
                         </div>
-                        {tweet.NAME === user.name && (
+                        {tweet.NAME === user && (
                             <span
                                 onClick={() =>
                                     dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getTweets()))

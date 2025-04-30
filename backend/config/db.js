@@ -11,7 +11,7 @@ conn.connect(err => {
     if (err) {
         console.log("Problem connecting to server", err)
     } else {
-        console.log(`MYSQL Connected: ${conn.config.host}`.cyan.underline)
+        console.log(`MYSQL Connected at ${conn.config.host}: ${conn.config.port}`.cyan.underline)
     }
 })
 
