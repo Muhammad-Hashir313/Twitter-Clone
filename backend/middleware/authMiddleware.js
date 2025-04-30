@@ -1,41 +1,38 @@
-const jwt = require('jsonwebtoken')
-const asyncHandler = require('express-async-handler')
-// const User = require('../models/userModel')
-const conn = require('../config/db')
+const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler');
+const conn = require('../config/db');
 
 const protect = asyncHandler(async (req, res, next) => {
-    let token
+    let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            // Get token from header
-            token = await req.headers.authorization.split(' ')[1]
+        token = req.headers.authorization.split(' ')[1];
 
+        try {
             // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET)
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
             // Get user from token
             conn.query('SELECT ID, NAME, EMAIL FROM USERS WHERE ID = ?', [decoded.id], (err, results) => {
                 if (err) {
-                    console.error(err)
-                    return res.status(500).json({ message: "Error getting user!" })
+                    console.error(err);
+                    return res.status(500).json({ message: "Error fetching user from database" });
                 }
 
-                req.user = results[0]
+                if (results.length === 0) {
+                    return res.status(401).json({ message: "User not found" });
+                }
 
-                next()
-            })
+                req.user = results[0];
+                next();
+            });
         } catch (error) {
-            console.log(error)
-            res.statusCode(401)
-            throw new Error('Not Authorized')
+            console.error(error);
+            res.status(401).json({ message: 'Not authorized, invalid token' });
         }
+    } else {
+        res.status(401).json({ message: 'Not authorized, no token' });
     }
+});
 
-    if (!token) {
-        res.status(401)
-        throw new Error('Not Authorized, No Token')
-    }
-})
-
-module.exports = protect
+module.exports = protect;

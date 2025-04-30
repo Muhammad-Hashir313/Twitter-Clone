@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FaArrowLeft, FaUser } from 'react-icons/fa'
 import { format } from 'date-fns'
 import LeftSidebar from './LeftSidebar'
-import RightSidebar from '../right sidebar/RightSidebar'
+// import RightSidebar from '../right sidebar/RightSidebar'
 import { getTweets, resetTweets } from "../../features/tweets/tweetSlice";
 import Loader from '../../components/Loader'
 import TweetItem from '../../components/TweetItem'
@@ -35,6 +35,12 @@ const Profile = () => {
     const date = new Date(user.createdAt)
     const formattedDate = format(date, 'MMMM yyyy')
 
+    // Tweet date
+    const getTweetDate = (tweetCreation) => {
+        const tweetDate = new Date(tweetCreation);
+        return format(tweetDate, 'MMMM yyyy');
+    };
+
     const [activeTab, setActiveTab] = useState("Posts");
 
     if (isLoading) {
@@ -44,7 +50,7 @@ const Profile = () => {
     return (
         <div className='bg-black text-white'>
             <LeftSidebar />
-            <RightSidebar />
+            {/* <RightSidebar /> */}
             <div>
                 {/* Sticky Header */}
                 <div className="sticky top-0 left-80 w-160.5 backdrop-blur-lg flex items-center bg-black/50 border-b border-white/20">
@@ -169,9 +175,9 @@ const Profile = () => {
                 <div className='relative left-80 top-9'>
                     {tweets.length > 0 ? (
                         tweets.map((tweet) => (
-                            <TweetItem tweet={tweet} date={formattedDate} />
+                            <TweetItem tweet={tweet} date={getTweetDate(tweet.CREATED_AT)} />
                         ))
-                    ) : (<h1>Nothing</h1>)}
+                    ) : (<h1>Nothing to show</h1>)}
                 </div>
             </div>
         </div >

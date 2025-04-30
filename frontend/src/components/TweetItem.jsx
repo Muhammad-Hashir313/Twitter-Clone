@@ -76,8 +76,8 @@ const TweetItem = ({ tweet, date }) => {
                     {/* User Info */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="font-bold">{tweet.NAME}</span>
-                            <span className="text-gray-400">@{tweet.NAME} · {date}</span>
+                            <span className="font-bold">{user.name}</span>
+                            <span className="text-gray-400">@{user.name} · {date}</span>
                         </div>
                         {tweet.NAME === user.name && (
                             <span
