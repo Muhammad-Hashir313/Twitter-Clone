@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 // const User = require('../models/userModel')
 const conn = require('../config/db')
+const { response } = require('express')
 
 // @desc    Register a New User
 // @route   POST /api/users
@@ -105,6 +106,27 @@ const getAll = asyncHandler(async (req, res) => {
     res.json(req.user)
 })
 
+// @desc    Search user
+// @route   GET /api/users/search
+// @access  Private
+const searchUser = asyncHandler(async (req, res) => {
+    const { name } = req.body
+
+    if (!name) {
+        res.status(400)
+        throw new Error('Please enter field')
+    }
+
+    conn.query('SELECT * FROM USERS WHERE NAME LIKE ?', [`${name}%`], (err, results) => {
+        if (err) {
+            console.error(err)
+            res.status(500).json({ message: 'Error searching user' })
+        }
+
+        res.status(200).json(results)
+    })
+})
+
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -115,5 +137,6 @@ const generateToken = (id) => {
 module.exports = {
     registerUser,
     loginUser,
-    getAll
+    getAll,
+    searchUser
 }

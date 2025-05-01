@@ -10,6 +10,7 @@ import Profile from './pages/left sidebar/Profile'
 import Notifications from './pages/left sidebar/Notifications'
 import Explore from './pages/left sidebar/Explore'
 import TweetForm from './components/TweetForm'
+import UserProfile from './pages/left sidebar/UserProfile'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/explore' element={<Explore />} />
           <Route path='/post' element={<TweetForm />} />
+          <Route path='/profile/:id' element={<UserProfile />} />
         </Routes>
       </Router>
       <ToastContainer />

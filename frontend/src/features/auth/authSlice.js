@@ -9,7 +9,8 @@ const initialState = {
     isError: false,
     isSuccess: false,
     isLoading: false,
-    message: ''
+    message: '',
+    searchResults: []
 }
 
 // Register User
@@ -36,6 +37,15 @@ export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
 // Logout user
 export const logout = createAsyncThunk('auth/logout', () => {
     authService.logout()
+})
+
+export const searchUser = createAsyncThunk('auth/search', async (user, thunkAPI) => {
+    try {
+        return await authService.searchUser(user)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
 })
 
 const authSlice = createSlice({
@@ -80,6 +90,14 @@ const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null
+            })
+            .addCase(searchUser.fulfilled, (state, action) => {
+                state.isSuccess = true
+                state.searchResults = action.payload
+            })
+            .addCase(searchUser.rejected, (state, action) => {
+                state.isError = true
+                state.message = action.payload
             })
     }
 })
