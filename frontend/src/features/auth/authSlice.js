@@ -6,6 +6,8 @@ const user = JSON.parse(localStorage.getItem('user'))
 
 const initialState = {
     user: user ? user : null,
+    followers: [],
+    following: [],
     isError: false,
     isSuccess: false,
     isLoading: false,
@@ -54,6 +56,54 @@ export const searchUser = createAsyncThunk('auth/search', async (user, thunkAPI)
 export const getUserProfile = createAsyncThunk('auth/user', async (user, thunkAPI) => {
     try {
         return await authService.getUserProfile(user)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get Followers
+export const getFollowers = createAsyncThunk('auth/followers', async (_, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await authService.getFollowers(token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get Following
+export const getFollowing = createAsyncThunk('auth/following', async (_, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await authService.getFollowing(token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Follow user
+export const followUser = createAsyncThunk('auth/follow', async (user, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await authService.followUser(user, token)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Unfollow user
+export const unfollowUser = createAsyncThunk('auth/unfollow', async (user, thunkAPI) => {
+    try {
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await authService.unfollowUser(user, token)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -123,6 +173,12 @@ const authSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+            })
+            .addCase(getFollowers.fulfilled, (state, action) => {
+                state.followers = action.payload
+            })
+            .addCase(getFollowing.fulfilled, (state, action) => {
+                state.following = action.payload
             })
     }
 })

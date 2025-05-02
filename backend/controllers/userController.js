@@ -44,12 +44,13 @@ const registerUser = asyncHandler(async (req, res) => {
                     }
 
                     const newUser = {
-                        id: results.insertId,
-                        name: name,
-                        email: email,
-                        token: generateToken(results.insertId),
+                        id: results[0].ID,
+                        name: results[0].NAME,
+                        email: results[0].EMAIL,
+                        token: generateToken(results[0].ID),
                         createdAt: results[0].CREATED_AT
                     }
+
                     res.status(201).json(newUser)
                 })
 

@@ -42,12 +42,68 @@ const getUserProfile = async (userData) => {
     return response.data
 }
 
+// Get Followers
+const getFollowers = async (token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + 'followers', config)
+
+    return response.data
+}
+
+// Get Following
+const getFollowing = async (token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + 'following', config)
+
+    return response.data
+}
+
+// Follow user
+const followUser = async (userData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.post(`${API_URL}${userData}/follow`, config)
+
+    return response.data
+}
+
+// Unfollow User
+const unfollowUser = async (userData, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.delete(`${API_URL}${userData}/unfollow`, config)
+
+    return response.data
+}
+
 const authService = {
     register,
     login,
     logout,
     searchUser,
-    getUserProfile
+    getUserProfile,
+    getFollowers,
+    getFollowing,
+    followUser,
+    unfollowUser
 }
 
 export default authService

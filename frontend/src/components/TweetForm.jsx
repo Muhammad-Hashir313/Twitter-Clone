@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
 // import { toast } from 'react-toastify'
 import { useDispatch } from "react-redux";
-import { createTweet } from '../features/tweets/tweetSlice'
+import { createTweet, getAllTweets } from '../features/tweets/tweetSlice'
 import { FaTimes, FaImage, FaSmile, FaCalendarAlt, FaMapMarkerAlt, FaPlusCircle } from "react-icons/fa";
 
-const TweetForm = ({ showPopup, setShowPopup }) => {
+const TweetForm = ({ showPopup, setShowPopup, onCreatePost }) => {
     const [text, setText] = useState('')
     const dispatch = useDispatch()
 
-    // useEffect(() => {
+    const handlePost = (e) => {
+        onCreatePost(text)
 
-    // })
-
-    const createPost = (e) => {
-        e.preventDefault()
-
-        dispatch(createTweet({ text }))
         setText('')
     }
+
+    // useEffect(() => {
+    //     window.location.reload()
+    // }, [dispatch])
 
     return (
         <div className="flex flex-col items-center w-320">
@@ -52,7 +51,7 @@ const TweetForm = ({ showPopup, setShowPopup }) => {
                         <button
                             className={`w-16 h-9 rounded-full text-white ${!text.trim() ? " bg-gray-500" : "bg-blue-500 hover:bg-blue-600 cursor-pointer"}`}
                             disabled={!text.trim()}
-                            onClick={createPost}
+                            onClick={handlePost}
                         >
                             Post
                         </button>

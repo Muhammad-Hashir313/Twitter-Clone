@@ -8,7 +8,7 @@ import LeftSidebar from "./left sidebar/LeftSidebar";
 // import RightSidebar from './right sidebar/RightSidebar'
 import TweetForm from "../components/TweetForm";
 import TweetItem from "../components/TweetItem";
-import { getAllTweets, resetTweets } from '../features/tweets/tweetSlice'
+import { getAllTweets, resetTweets, createTweet } from '../features/tweets/tweetSlice'
 
 const Home = () => {
     const dispatch = useDispatch()
@@ -35,11 +35,20 @@ const Home = () => {
     }, [user, navigate, isError, message, dispatch]);
 
     const getDate = (creation) => {
+        if (!creation) return "Unknown";
         const date = new Date(creation);
+        if (isNaN(date)) return "Invalid";
         return format(date, 'MMMM yyyy');
     };
 
+
     const [activeTab, setActiveTab] = useState("For You");
+
+    const handleCreatePost = (text) => {
+        dispatch(createTweet({ text })).then(() => {
+            dispatch(getAllTweets())
+        })
+    }
 
     if (isLoading) {
         return <Loader />
@@ -73,14 +82,14 @@ const Home = () => {
             </div>
             {activeTab === 'For You' ? (
                 <>
-                    <TweetForm />
+                    <TweetForm onCreatePost={handleCreatePost} />
                     {/* Tweets */}
                     <div className='relative left-80 text-white'>
                         {
                             tweets.map((tweet) => (
-                                <>
+                                <div key={tweet.ID}>
                                     <TweetItem tweet={tweet} user={tweet.NAME} date={getDate(tweet.CREATED_AT)} key={tweet.ID} />
-                                </>
+                                </div>
                             ))
                         }
                     </div>

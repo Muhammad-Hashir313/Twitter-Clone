@@ -8,12 +8,13 @@ import LeftSidebar from './LeftSidebar'
 import { getTweets, resetTweets } from "../../features/tweets/tweetSlice";
 import Loader from '../../components/Loader'
 import TweetItem from '../../components/TweetItem'
+import { getFollowers, getFollowing } from '../../features/auth/authSlice'
 
 const Profile = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const { user } = useSelector(state => state.auth)
+    const { user, followers, following } = useSelector(state => state.auth)
     const { tweets, isError, isLoading, message } = useSelector(state => state.tweets);
 
     useEffect(() => {
@@ -26,6 +27,8 @@ const Profile = () => {
         }
 
         dispatch(getTweets());
+        dispatch(getFollowers())
+        dispatch(getFollowing())
 
         return () => {
             dispatch(resetTweets());
@@ -89,10 +92,10 @@ const Profile = () => {
                     {/* Follow Info */}
                     <div className="flex gap-4">
                         <p className="text-gray-400 cursor-pointer hover:underline">
-                            <span className='text-white font-bold '>{user.following || 0}</span> Following
+                            <span className='text-white font-bold '>{following.following}</span> Following
                         </p>
                         <p className="text-gray-400 cursor-pointer hover:underline">
-                            <span className="text-white font-bold">{user.followers || 0}</span> Followers
+                            <span className="text-white font-bold">{followers.followers}</span> Followers
                         </p>
                     </div>
                 </div>

@@ -11,13 +11,13 @@ import { FiShare } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import {
     deleteTweet,
-    getTweets,
     getLikes,
     likeTweet,
     unlikeTweet,
     getComments,
     addComment,
-    deleteComment
+    deleteComment,
+    getAllTweets
 } from '../features/tweets/tweetSlice';
 
 const TweetItem = ({ tweet, user, date }) => {
@@ -82,7 +82,7 @@ const TweetItem = ({ tweet, user, date }) => {
                         {tweet.NAME === loggedInUser.name && (
                             <span
                                 onClick={() =>
-                                    dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getTweets()))
+                                    dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getAllTweets()))
                                 }
                                 className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2"
                             >

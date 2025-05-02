@@ -35,6 +35,13 @@ const UserProfile = () => {
     };
 
     const [activeTab, setActiveTab] = useState("Posts");
+    const [follow, setFollow] = useState(false)
+
+    const handleFollow = (e) => {
+        e.preventDefault()
+
+        setFollow(!follow)
+    }
 
     if (isLoading) {
         return <Loader />
@@ -64,8 +71,13 @@ const UserProfile = () => {
                 </div>
 
                 <div className='relative left-205 top-3'>
-                    <button className="border border-gray-500 rounded-full cursor-pointer hover:bg-white/10 w-30 h-8">
-                        Edit profile
+                    <button
+                        onClick={handleFollow}
+                        className={`border w-30 h-8 cursor-pointer rounded-full
+                        ${follow ? ("border-gray-500 hover:bg-white/10") : ("border-blue-500 bg-blue-700 hover:bg-blue-500")}`}>
+                        {
+                            follow ? 'Unfollow' : 'Follow'
+                        }
                     </button>
                 </div>
 
