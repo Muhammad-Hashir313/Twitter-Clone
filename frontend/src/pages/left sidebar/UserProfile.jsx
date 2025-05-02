@@ -1,43 +1,37 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft, FaUser } from 'react-icons/fa'
 import { format } from 'date-fns'
 import LeftSidebar from './LeftSidebar'
 // import RightSidebar from '../right sidebar/RightSidebar'
-import { getTweets, resetTweets } from "../../features/tweets/tweetSlice";
+import { getUserProfile } from '../../features/auth/authSlice'
 import Loader from '../../components/Loader'
 import TweetItem from '../../components/TweetItem'
 
 const UserProfile = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { name } = useParams()
 
-    const { tweets, isError, isLoading, message } = useSelector(state => state.tweets);
+
+    const { user, anotherUser, isLoading, isError, message } = useSelector(state => state.auth)
 
     useEffect(() => {
         if (isError) {
-            console.log(message);
+            console.error(message)
         }
 
-        if (!user) {
-            navigate("/login");
+        if (name.toLowerCase() == user.name.toLowerCase()) {
+            navigate('/profile')
+        } else {
+            dispatch(getUserProfile(name))
         }
+    }, []);
 
-        dispatch(getTweets());
-
-        return () => {
-            dispatch(resetTweets());
-        };
-    }, [user, navigate, isError, message, dispatch]);
-
-    const date = new Date(user.createdAt)
-    const formattedDate = format(date, 'MMMM yyyy')
-
-    // Tweet date
-    const getTweetDate = (tweetCreation) => {
-        const tweetDate = new Date(tweetCreation);
-        return format(tweetDate, 'MMMM yyyy');
+    const getDate = (creation) => {
+        const date = new Date(creation);
+        return format(date, 'MMMM yyyy');
     };
 
     const [activeTab, setActiveTab] = useState("Posts");
@@ -58,7 +52,7 @@ const UserProfile = () => {
                             <FaArrowLeft size={20} />
                         </div>
                     </Link>
-                    <h1 className="text-xl font-semibold ml-4">{user.name}</h1>
+                    <h1 className="text-xl font-semibold ml-4">{anotherUser.NAME}</h1>
                 </div>
 
                 {/* Profile Photo */}
@@ -79,19 +73,23 @@ const UserProfile = () => {
                 <div className='relative left-85 top-10'>
                     <div className="flex justify-between items-center">
                         <div>
-                            <h1 className="text-2xl font-bold">{user.name}</h1>
-                            <p className="text-gray-400">@{user.name}</p>
-                            <p className="text-gray-400 mt-1">📅 Joined {formattedDate || "April 2022"}</p>
+                            {anotherUser.length > 0 && (
+                                <>
+                                    <h1 className="text-2xl font-bold">{anotherUser[0]?.NAME}</h1>
+                                    <p className="text-gray-400">@{anotherUser[0]?.NAME}</p>
+                                    <p className="text-gray-400 mt-1">📅 Joined {getDate(anotherUser[0]?.CREATED_AT)}</p>
+                                </>
+                            )}
                         </div>
                     </div>
 
                     {/* Follow Info */}
                     <div className="flex gap-4">
                         <p className="text-gray-400 cursor-pointer hover:underline">
-                            <span className='text-white font-bold '>{user.following || 0}</span> Following
+                            <span className='text-white font-bold '>{0}</span> Following
                         </p>
                         <p className="text-gray-400 cursor-pointer hover:underline">
-                            <span className="text-white font-bold">{user.followers || 0}</span> Followers
+                            <span className="text-white font-bold">{0}</span> Followers
                         </p>
                     </div>
                 </div>
@@ -172,9 +170,11 @@ const UserProfile = () => {
 
                 {/* Tweets */}
                 <div className='relative left-80 top-9'>
-                    {tweets.length > 0 ? (
-                        tweets.map((tweet) => (
-                            <TweetItem tweet={tweet} user={user.name} date={getTweetDate(tweet.CREATED_AT)} />
+                    {anotherUser.length > 0 ? (
+                        anotherUser.map((tweet, index) => (
+                            <div key={index}>
+                                <TweetItem tweet={tweet} user={tweet.NAME} date={getDate(tweet.TWEET_CREATED_AT)} />
+                            </div>
                         ))
                     ) : (<h1>Nothing to show</h1>)}
                 </div>

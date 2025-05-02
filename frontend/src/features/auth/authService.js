@@ -36,11 +36,18 @@ const searchUser = async (userData) => {
     return response.data
 }
 
+// Get another user profile
+const getUserProfile = async (userData) => {
+    const response = await axios.get(API_URL + 'profile/' + userData)
+    return response.data
+}
+
 const authService = {
     register,
     login,
     logout,
-    searchUser
+    searchUser,
+    getUserProfile
 }
 
 export default authService

@@ -26,7 +26,7 @@ function App() {
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/explore' element={<Explore />} />
           <Route path='/post' element={<TweetForm />} />
-          <Route path='/profile/:id' element={<UserProfile />} />
+          <Route path='/profile/:name' element={<UserProfile />} />
         </Routes>
       </Router>
       <ToastContainer />

@@ -127,6 +127,22 @@ const searchUser = asyncHandler(async (req, res) => {
     })
 })
 
+// @desc    Get another user
+// @route   GET /api/users/profile/:name
+// @access  Private
+const getUserProfile = asyncHandler(async (req, res) => {
+    const name = req.params.name
+
+    conn.query('SELECT *, T.CREATED_AT as TWEET_CREATED_AT FROM TWEETS T JOIN USERS U ON T.USER_ID = U.ID WHERE U.NAME = ?', [name], (err, results) => {
+        if (err) {
+            console.error(err)
+            throw new Error('Error getting user')
+        }
+
+        res.status(200).json(results)
+    })
+})
+
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -138,5 +154,6 @@ module.exports = {
     registerUser,
     loginUser,
     getAll,
-    searchUser
+    searchUser,
+    getUserProfile
 }

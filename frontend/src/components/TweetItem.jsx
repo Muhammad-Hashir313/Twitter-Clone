@@ -22,6 +22,7 @@ import {
 
 const TweetItem = ({ tweet, user, date }) => {
     const dispatch = useDispatch();
+    const loggedInUser = useSelector(state => state.auth.user)
 
     // LIKES
     const tweetLikes = useSelector(state => state.tweets.tweetLikes[tweet.ID]) || {};
@@ -78,7 +79,7 @@ const TweetItem = ({ tweet, user, date }) => {
                             <span className="font-bold">{user}</span>
                             <span className="text-gray-400">@{user} · {date}</span>
                         </div>
-                        {tweet.NAME === user && (
+                        {tweet.NAME === loggedInUser.name && (
                             <span
                                 onClick={() =>
                                     dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getTweets()))

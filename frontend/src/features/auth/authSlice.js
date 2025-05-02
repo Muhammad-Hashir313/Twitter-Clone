@@ -10,7 +10,8 @@ const initialState = {
     isSuccess: false,
     isLoading: false,
     message: '',
-    searchResults: []
+    searchResults: [],
+    anotherUser: []
 }
 
 // Register User
@@ -39,9 +40,20 @@ export const logout = createAsyncThunk('auth/logout', () => {
     authService.logout()
 })
 
+// Search user
 export const searchUser = createAsyncThunk('auth/search', async (user, thunkAPI) => {
     try {
         return await authService.searchUser(user)
+    } catch (error) {
+        const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+// Get another user profile
+export const getUserProfile = createAsyncThunk('auth/user', async (user, thunkAPI) => {
+    try {
+        return await authService.getUserProfile(user)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -96,6 +108,19 @@ const authSlice = createSlice({
                 state.searchResults = action.payload
             })
             .addCase(searchUser.rejected, (state, action) => {
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(getUserProfile.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getUserProfile.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.anotherUser = action.payload
+            })
+            .addCase(getUserProfile.rejected, (state, action) => {
+                state.isLoading = false
                 state.isError = true
                 state.message = action.payload
             })

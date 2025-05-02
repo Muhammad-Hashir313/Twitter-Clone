@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { searchUser } from '../../features/auth/authSlice'
 import LeftSidebar from './LeftSidebar'
+import { Link } from 'react-router-dom'
 // import RightSidebar from '../right sidebar/RightSidebar'
 
 const Explore = () => {
@@ -45,8 +46,10 @@ const Explore = () => {
                             result.NAME.toLowerCase().includes(value.toLowerCase())
                         )
                         .map((result, index) => (
-                            <li key={index}>
-                                {result.NAME}
+                            <li key={index} className='cursor-pointer'>
+                                <Link to={`/profile/${result.NAME.toLowerCase()}`}>
+                                    {result.NAME}
+                                </Link>
                             </li>
                         ))}
                 </ul>

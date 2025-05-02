@@ -34,8 +34,10 @@ const Home = () => {
         };
     }, [user, navigate, isError, message, dispatch]);
 
-    const date = new Date(user.createdAt)
-    const formattedDate = format(date, 'd MMMM yyyy')
+    const getDate = (creation) => {
+        const date = new Date(creation);
+        return format(date, 'MMMM yyyy');
+    };
 
     const [activeTab, setActiveTab] = useState("For You");
 
@@ -77,7 +79,7 @@ const Home = () => {
                         {
                             tweets.map((tweet) => (
                                 <>
-                                    <TweetItem tweet={tweet} user={tweet.NAME} date={formattedDate} key={tweet.ID} />
+                                    <TweetItem tweet={tweet} user={tweet.NAME} date={getDate(tweet.CREATED_AT)} key={tweet.ID} />
                                 </>
                             ))
                         }
