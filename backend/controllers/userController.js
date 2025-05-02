@@ -143,6 +143,92 @@ const getUserProfile = asyncHandler(async (req, res) => {
     })
 })
 
+// @desc    Get Followers
+// @route   GET /api/users/followers
+// @access  Public
+const getFollowers = asyncHandler(async (req, res) => {
+    const id = req.user.ID
+
+    conn.query('SELECT COUNT(*) AS followers FROM FOLLOW WHERE FOLLOWING_ID = ?', [id], (err, results) => {
+        if (err) {
+            console.error(err)
+            throw new Error('Error getting Followers')
+        }
+
+        res.status(200).json(results[0])
+    })
+})
+
+// @desc    Get Following
+// @route   GET /api/users/following
+// @access  Public
+const getFollowing = asyncHandler(async (req, res) => {
+    const id = req.user.ID
+
+    conn.query('SELECT COUNT(*) AS following FROM FOLLOW WHERE FOLLOWER_ID = ?', [id], (err, results) => {
+        if (err) {
+            console.error(err)
+            throw new Error('Error getting Following')
+        }
+
+        res.status(200).json(results[0])
+    })
+})
+
+// @desc    Follow User
+// @route   POST /api/users/:id/follow
+// @access  Private
+const followUser = asyncHandler(async (req, res) => {
+    const follower_id = req.user.ID
+    const following_id = parseInt(req.params.id)
+
+    if (follower_id === parseInt(following_id)) {
+        return res.status(400).json({ message: 'Cannot follow yourself' })
+    }
+
+    conn.query('INSERT INTO FOLLOW (FOLLOWER_ID, FOLLOWING_ID) VALUES (?,?)', [follower_id, following_id], (err) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ message: 'Already followed' });
+            }
+            console.error('Follow error:', err);
+            return res.status(500).json({ message: 'Error in following user' });
+        }
+
+        res.status(200).json({
+            follower: follower_id,
+            following: following_id
+        })
+    })
+})
+
+// @desc    Get another user
+// @route   GET /api/users/:id/unfollow
+// @access  Private
+const unfollowUser = asyncHandler(async (req, res) => {
+    const follower_id = req.user.ID
+    const following_id = parseInt(req.params.id)
+
+    if (follower_id === parseInt(following_id)) {
+        return res.status(400).json({ message: 'Cannot unfollow yourself' })
+    }
+
+    conn.query('DELETE FROM FOLLOW WHERE FOLLOWER_ID = ? AND FOLLOWING_ID = ?', [follower_id, following_id], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error in unfollowing user' })
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(400).json({ message: 'You are not following this user' })
+        }
+
+        res.status(200).json({
+            follower: follower_id,
+            following: following_id
+        })
+    })
+})
+
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -155,5 +241,9 @@ module.exports = {
     loginUser,
     getAll,
     searchUser,
-    getUserProfile
+    getUserProfile,
+    getFollowers,
+    getFollowing,
+    followUser,
+    unfollowUser
 }
