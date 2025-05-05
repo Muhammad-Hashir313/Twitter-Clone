@@ -27,8 +27,8 @@ const Profile = () => {
         }
 
         dispatch(getTweets());
-        dispatch(getFollowers())
-        dispatch(getFollowing())
+        dispatch(getFollowers(user.id))
+        dispatch(getFollowing(user.id))
 
         return () => {
             dispatch(resetTweets());

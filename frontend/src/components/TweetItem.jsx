@@ -25,41 +25,42 @@ const TweetItem = ({ tweet, user, date }) => {
     const loggedInUser = useSelector(state => state.auth.user)
 
     // LIKES
-    const tweetLikes = useSelector(state => state.tweets.tweetLikes[tweet.ID]) || {};
+    const tweet_id = parseInt(tweet.ID)
+    const tweetLikes = useSelector(state => state.tweets.tweetLikes[tweet_id]) || {};
     const { likes = 0, liked = false } = tweetLikes;
 
     // COMMENTS
-    const tweetComments = useSelector(state => state.tweets.comments[tweet.ID]) || [];
+    const tweetComments = useSelector(state => state.tweets.comments[tweet_id]) || [];
     const [commentText, setCommentText] = useState('');
     const [showComments, setShowComments] = useState(false);
 
     useEffect(() => {
-        dispatch(getLikes(tweet.ID));
-        dispatch(getComments(tweet.ID));
+        dispatch(getLikes(tweet_id));
+        dispatch(getComments(tweet_id));
 
-    }, [dispatch, tweet.ID]);
+    }, [dispatch, tweet_id]);
 
     const toggle = () => {
         if (liked) {
-            dispatch(unlikeTweet(tweet.ID)).then(() => dispatch(getLikes(tweet.ID)));
+            dispatch(unlikeTweet(tweet_id)).then(() => dispatch(getLikes(tweet_id)));
         } else {
-            dispatch(likeTweet(tweet.ID)).then(() => dispatch(getLikes(tweet.ID)));
+            dispatch(likeTweet(tweet_id)).then(() => dispatch(getLikes(tweet_id)));
         }
     };
 
     const handleCommentSubmit = () => {
         if (commentText.trim()) {
-            dispatch(addComment({ tweetId: tweet.ID, content: commentText }))
+            dispatch(addComment({ tweetId: tweet_id, content: commentText }))
                 .then(() => {
-                    dispatch(getComments(tweet.ID));
+                    dispatch(getComments(tweet_id));
                     setCommentText('');
                 });
         }
     };
 
     const handleDeleteComment = (commentId) => {
-        dispatch(deleteComment({ tweetId: tweet.ID, commentId }))
-            .then(() => dispatch(getComments(tweet.ID)));
+        dispatch(deleteComment({ tweetId: tweet_id, commentId }))
+            .then(() => dispatch(getComments(tweet_id)));
     };
 
     return (
@@ -82,7 +83,7 @@ const TweetItem = ({ tweet, user, date }) => {
                         {tweet.NAME === loggedInUser.name && (
                             <span
                                 onClick={() =>
-                                    dispatch(deleteTweet(tweet.ID)).then(() => dispatch(getAllTweets()))
+                                    dispatch(deleteTweet(tweet_id)).then(() => dispatch(getAllTweets()))
                                 }
                                 className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2"
                             >

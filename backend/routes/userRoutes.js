@@ -9,11 +9,11 @@ router.get('/me', protect, getAll)
 
 // Search Routes
 router.post('/search', searchUser)
-router.get('/profile/:name', getUserProfile)
+router.get('/profile/:name', protect, getUserProfile)
 
 // Follow Routes
-router.get('/followers', protect, getFollowers)
-router.get('/following', protect, getFollowing)
+router.get('/:id/followers', getFollowers)
+router.get('/:id/following', getFollowing)
 router.post('/:id/follow', protect, followUser)
 router.delete('/:id/unfollow', protect, unfollowUser)
 

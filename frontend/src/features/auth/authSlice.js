@@ -55,7 +55,9 @@ export const searchUser = createAsyncThunk('auth/search', async (user, thunkAPI)
 // Get another user profile
 export const getUserProfile = createAsyncThunk('auth/user', async (user, thunkAPI) => {
     try {
-        return await authService.getUserProfile(user)
+        const token = await thunkAPI.getState().auth.user.token
+
+        return await authService.getUserProfile(user, token)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -63,11 +65,11 @@ export const getUserProfile = createAsyncThunk('auth/user', async (user, thunkAP
 })
 
 // Get Followers
-export const getFollowers = createAsyncThunk('auth/followers', async (_, thunkAPI) => {
+export const getFollowers = createAsyncThunk('auth/followers', async (userID, thunkAPI) => {
     try {
         const token = await thunkAPI.getState().auth.user.token
 
-        return await authService.getFollowers(token)
+        return await authService.getFollowers(userID, token)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -75,11 +77,11 @@ export const getFollowers = createAsyncThunk('auth/followers', async (_, thunkAP
 })
 
 // Get Following
-export const getFollowing = createAsyncThunk('auth/following', async (_, thunkAPI) => {
+export const getFollowing = createAsyncThunk('auth/following', async (userID, thunkAPI) => {
     try {
         const token = await thunkAPI.getState().auth.user.token
 
-        return await authService.getFollowing(token)
+        return await authService.getFollowing(userID, token)
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.data || error.toString()
         return thunkAPI.rejectWithValue(message)

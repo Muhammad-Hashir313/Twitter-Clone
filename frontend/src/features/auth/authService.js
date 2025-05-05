@@ -37,33 +37,39 @@ const searchUser = async (userData) => {
 }
 
 // Get another user profile
-const getUserProfile = async (userData) => {
-    const response = await axios.get(API_URL + 'profile/' + userData)
-    return response.data
-}
-
-// Get Followers
-const getFollowers = async (token) => {
+const getUserProfile = async (userData, token) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }
 
-    const response = await axios.get(API_URL + 'followers', config)
+    const response = await axios.get(API_URL + 'profile/' + userData, config)
+    return response.data
+}
+
+// Get Followers
+const getFollowers = async (userID, token) => {
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+
+    const response = await axios.get(API_URL + userID + '/followers', config)
 
     return response.data
 }
 
 // Get Following
-const getFollowing = async (token) => {
+const getFollowing = async (userID, token) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }
 
-    const response = await axios.get(API_URL + 'following', config)
+    const response = await axios.get(API_URL + userID + '/following', config)
 
     return response.data
 }
@@ -76,7 +82,7 @@ const followUser = async (userData, token) => {
         }
     }
 
-    const response = await axios.post(`${API_URL}${userData}/follow`, config)
+    const response = await axios.post(`${API_URL}${userData}/follow`, {}, config)
 
     return response.data
 }

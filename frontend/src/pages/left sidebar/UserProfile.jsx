@@ -5,7 +5,7 @@ import { FaArrowLeft, FaUser } from 'react-icons/fa'
 import { format } from 'date-fns'
 import LeftSidebar from './LeftSidebar'
 // import RightSidebar from '../right sidebar/RightSidebar'
-import { getUserProfile } from '../../features/auth/authSlice'
+import { followUser, getUserProfile, unfollowUser, getFollowers, getFollowing } from '../../features/auth/authSlice'
 import Loader from '../../components/Loader'
 import TweetItem from '../../components/TweetItem'
 
@@ -14,10 +14,10 @@ const UserProfile = () => {
     const navigate = useNavigate()
     const { name } = useParams()
 
-
-    const { user, anotherUser, isLoading, isError, message } = useSelector(state => state.auth)
+    const { user, anotherUser, isLoading, isError, message, followers, following } = useSelector(state => state.auth)
 
     useEffect(() => {
+
         if (isError) {
             console.error(message)
         }
@@ -27,7 +27,13 @@ const UserProfile = () => {
         } else {
             dispatch(getUserProfile(name))
         }
-    }, []);
+
+        if (anotherUser?.userData?.ID) {
+            dispatch(getFollowers(anotherUser?.userData?.ID))
+            dispatch(getFollowing(anotherUser?.userData?.ID))
+        }
+
+    }, [dispatch, name, user.name, navigate, isError, message, anotherUser?.userData?.ID]);
 
     const getDate = (creation) => {
         const date = new Date(creation);
@@ -37,14 +43,34 @@ const UserProfile = () => {
     const [activeTab, setActiveTab] = useState("Posts");
     const [follow, setFollow] = useState(false)
 
+    useEffect(() => {
+        if (anotherUser) {
+            if (anotherUser.isFollowing !== undefined) {
+                setFollow(anotherUser.isFollowing === 1);
+            }
+        }
+
+    }, [anotherUser]);
+
+    const getFollowDetails = () => {
+        dispatch(getFollowers(anotherUser?.userData?.ID))
+        dispatch(getFollowing(anotherUser?.userData?.ID))
+    }
+
     const handleFollow = (e) => {
         e.preventDefault()
 
-        setFollow(!follow)
-    }
+        if (follow) {
+            dispatch(unfollowUser(anotherUser.userData.ID)).then(() => {
+                dispatch(getUserProfile(name)).then(getFollowDetails);
+            });
+        } else {
+            dispatch(followUser(anotherUser.userData.ID)).then(() => {
+                dispatch(getUserProfile(name)).then(getFollowDetails);
+            });
+        }
 
-    if (isLoading) {
-        return <Loader />
+        setFollow(!follow)
     }
 
     return (
@@ -59,7 +85,7 @@ const UserProfile = () => {
                             <FaArrowLeft size={20} />
                         </div>
                     </Link>
-                    <h1 className="text-xl font-semibold ml-4">{anotherUser.NAME}</h1>
+                    <h1 className="text-xl font-semibold ml-4">{anotherUser?.userData?.NAME}</h1>
                 </div>
 
                 {/* Profile Photo */}
@@ -85,23 +111,24 @@ const UserProfile = () => {
                 <div className='relative left-85 top-10'>
                     <div className="flex justify-between items-center">
                         <div>
-                            {anotherUser.length > 0 && (
+                            {anotherUser?.userData && (
                                 <>
-                                    <h1 className="text-2xl font-bold">{anotherUser[0]?.NAME}</h1>
-                                    <p className="text-gray-400">@{anotherUser[0]?.NAME}</p>
-                                    <p className="text-gray-400 mt-1">📅 Joined {getDate(anotherUser[0]?.CREATED_AT)}</p>
+                                    <h1 className="text-2xl font-bold">{anotherUser?.userData?.NAME}</h1>
+                                    <p className="text-gray-400">@{anotherUser?.userData?.NAME}</p>
+                                    <p className="text-gray-400 mt-1">📅 Joined {getDate(anotherUser?.userData?.CREATED_AT)}</p>
                                 </>
                             )}
+
                         </div>
                     </div>
 
                     {/* Follow Info */}
                     <div className="flex gap-4">
                         <p className="text-gray-400 cursor-pointer hover:underline">
-                            <span className='text-white font-bold '>{0}</span> Following
+                            <span className='text-white font-bold '>{following.following}</span> Following
                         </p>
                         <p className="text-gray-400 cursor-pointer hover:underline">
-                            <span className="text-white font-bold">{0}</span> Followers
+                            <span className="text-white font-bold">{followers.followers}</span> Followers
                         </p>
                     </div>
                 </div>
@@ -182,13 +209,13 @@ const UserProfile = () => {
 
                 {/* Tweets */}
                 <div className='relative left-80 top-9'>
-                    {anotherUser.length > 0 ? (
-                        anotherUser.map((tweet, index) => (
+                    {anotherUser?.totalResult?.length > 0 ? (
+                        anotherUser.totalResult.map((tweet, index) => (
                             <div key={index}>
                                 <TweetItem tweet={tweet} user={tweet.NAME} date={getDate(tweet.TWEET_CREATED_AT)} />
                             </div>
                         ))
-                    ) : (<h1>Nothing to show</h1>)}
+                    ) : (<h1 className='relative top-4 left-1.5'>Nothing to show</h1>)}
                 </div>
             </div>
         </div >

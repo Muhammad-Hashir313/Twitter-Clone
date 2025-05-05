@@ -133,22 +133,52 @@ const searchUser = asyncHandler(async (req, res) => {
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
     const name = req.params.name
+    const follower_id = req.user.ID
 
-    conn.query('SELECT *, T.CREATED_AT as TWEET_CREATED_AT FROM TWEETS T JOIN USERS U ON T.USER_ID = U.ID WHERE U.NAME = ?', [name], (err, results) => {
+    conn.query('SELECT * FROM USERS WHERE NAME = ?', [name], (err, results) => {
         if (err) {
             console.error(err)
             throw new Error('Error getting user')
         }
 
-        res.status(200).json(results)
+        const following_id = results[0].ID
+        const userData = results[0]
+
+        conn.query('SELECT COUNT(*) as isFollowing FROM FOLLOW WHERE FOLLOWER_ID = ? AND FOLLOWING_ID = ?', [follower_id, following_id], (err, results) => {
+            if (err) {
+                console.error(err)
+                throw new Error('Database Error')
+            }
+
+            const isFollowing = results[0].isFollowing
+
+            conn.query('SELECT *, T.CREATED_AT as TWEET_CREATED_AT FROM TWEETS T JOIN USERS U ON T.USER_ID = U.ID WHERE U.NAME = ?', [name], (err, results) => {
+                if (err) {
+                    console.error(err)
+                    throw new Error('Error getting user')
+                }
+
+                if (results) {
+
+                }
+
+                const totalResult = {
+                    isFollowing: isFollowing,
+                    userData,
+                    totalResult: results.length > 0 ? results : null
+                }
+
+                res.json(totalResult)
+            })
+        })
     })
 })
 
 // @desc    Get Followers
-// @route   GET /api/users/followers
+// @route   GET /api/users/:id/followers
 // @access  Public
 const getFollowers = asyncHandler(async (req, res) => {
-    const id = req.user.ID
+    const id = req.params.id
 
     conn.query('SELECT COUNT(*) AS followers FROM FOLLOW WHERE FOLLOWING_ID = ?', [id], (err, results) => {
         if (err) {
@@ -161,10 +191,10 @@ const getFollowers = asyncHandler(async (req, res) => {
 })
 
 // @desc    Get Following
-// @route   GET /api/users/following
+// @route   GET /api/users/:id/following
 // @access  Public
 const getFollowing = asyncHandler(async (req, res) => {
-    const id = req.user.ID
+    const id = req.params.id
 
     conn.query('SELECT COUNT(*) AS following FROM FOLLOW WHERE FOLLOWER_ID = ?', [id], (err, results) => {
         if (err) {
