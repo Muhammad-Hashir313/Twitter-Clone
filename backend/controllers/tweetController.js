@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler')
 // const Tweet = require('../models/tweetModel')
 const conn = require('../config/db')
+// const upload = require('../config/multer')
+const cloudinary = require('../config/cloudinary')
 
 // @desc    Get Tweets of user
 // @route   GET /api/tweets/all
@@ -35,15 +37,33 @@ const getTweets = asyncHandler(async (req, res) => {
 // @route   POST /api/tweets
 // @access  Private
 const createTweet = asyncHandler(async (req, res) => {
-    if (!req.body.text) {
-        res.status(400)
-        throw new Error('Please add some text')
-    }
+    // if (!req.body.text || !req.body.image) {
+    //     res.status(400)
+    //     throw new Error('Please fill the fields')
+    // }
 
     const userID = req.user.ID
     const text = req.body.text
+    let image
 
-    conn.query('INSERT INTO TWEETS (TEXT, USER_ID) VALUES (?,?)', [text, userID], (err, results) => {
+    if (req.file) {
+        try {
+            const result = await uploadToCloudinary(req.file.buffer, {
+                width: 1200,
+                height: 1200,
+                crop: 'limit',
+                quality: 'auto',
+                fetch_format: 'auto'
+            })
+
+            image = result.secure_url
+
+        } catch (error) {
+            return res.json({ error: 'What the heck man', error: error })
+        }
+    }
+
+    conn.query('INSERT INTO TWEETS (TEXT, USER_ID, IMAGE) VALUES (?,?, ?)', [text, userID, image], (err, results) => {
         if (err) {
             console.error(err)
             return res.status(500).json({ message: 'Error creating tweet!' })
@@ -52,7 +72,8 @@ const createTweet = asyncHandler(async (req, res) => {
         res.status(201).json({
             id: results.insertId,
             tweet: text,
-            user_id: userID
+            user_id: userID,
+            image: image
         })
     })
 })
@@ -283,6 +304,20 @@ const deleteComment = asyncHandler(async (req, res) => {
         res.status(200).json({ id: comment_id })
     })
 })
+
+// Cloudinary upload logic
+const uploadToCloudinary = (fileBuffer, options = {}) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { resource_type: 'auto', ...options },
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            }
+        );
+        stream.end(fileBuffer);
+    });
+}
 
 
 module.exports = {

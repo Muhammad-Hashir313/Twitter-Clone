@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const protect = require('../middleware/authMiddleware')
+const upload = require('../config/multer')
 const { getAllTweets, getTweets, createTweet, updateTweet, deleteTweet, getLikes, likeTweet, unlikeTweet, getComments, addComment, deleteComment } = require('../controllers/tweetController')
 
 router.route('/all').get(getAllTweets)
-router.route('/').get(protect, getTweets).post(protect, createTweet)
+router.route('/').get(protect, getTweets).post(protect, upload.single('image'), createTweet)
 router.route('/:id').put(protect, updateTweet).delete(protect, deleteTweet)
 router.route('/:id/like').post(protect, likeTweet).get(protect, getLikes)
 router.route('/:id/unlike').delete(protect, unlikeTweet)
