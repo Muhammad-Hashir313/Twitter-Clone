@@ -76,7 +76,7 @@ const TweetItem = ({ tweet, user, date }) => {
                 <div className="flex-1">
                     {/* User Info */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 relative bottom-1">
                             <span className="font-bold">{user}</span>
                             <span className="text-gray-400">@{user} · {date}</span>
                         </div>
@@ -93,10 +93,20 @@ const TweetItem = ({ tweet, user, date }) => {
                     </div>
 
                     {/* Tweet Text */}
-                    <p className="text-white mt-1">{tweet.TEXT}</p>
+                    {
+                        tweet.TEXT &&
+                        <p className="text-white relative bottom-1">{tweet.TEXT}</p>
+                    }
+
+                    {/* Tweet Image */}
+                    {
+                        tweet.IMAGE &&
+                        <img src={tweet.IMAGE} className="w-[90%] relative bottom-1" />
+
+                    }
 
                     {/* Tweet Actions */}
-                    <div className="flex justify-between text-gray-500 text-sm w-4/5 mt-2">
+                    <div className="flex justify-between text-gray-500 text-sm w-4/5">
                         <div
                             className="flex items-center gap-1 hover:text-blue-400 cursor-pointer"
                             onClick={() => setShowComments(!showComments)}

@@ -44,8 +44,8 @@ const Home = () => {
 
     const [activeTab, setActiveTab] = useState("For You");
 
-    const handleCreatePost = (text) => {
-        dispatch(createTweet({ text })).then(() => {
+    const handleCreatePost = (post) => {
+        dispatch(createTweet(post)).then(() => {
             dispatch(getAllTweets())
         })
     }

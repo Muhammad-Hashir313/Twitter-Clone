@@ -32,7 +32,7 @@ const getTweets = async (token) => {
 const createTweet = async (goalData, token) => {
     const config = {
         headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
         }
     }
 
