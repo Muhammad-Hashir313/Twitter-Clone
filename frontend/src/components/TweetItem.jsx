@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom'
 import {
     FaRegComment,
     FaRetweet,
@@ -155,7 +156,9 @@ const TweetItem = ({ tweet, user, date }) => {
                                     key={comment.COMMENT_ID}
                                     className="text-white text-sm ml-4 border-l border-white/20 pl-3 py-1 relative"
                                 >
-                                    <span className="font-semibold">@{comment.NAME || "user"} - </span> {comment.CONTENT}
+                                    <span className="font-semibold">@
+                                        <Link to={`/profile/${comment.NAME.toLowerCase()}`}>{comment.NAME || "user"}</Link>
+                                        - </span> {comment.CONTENT}
                                     {user.ID === comment.USER_ID && (
                                         <button
                                             className="text-red-400 text-xs ml-2 hover:underline"

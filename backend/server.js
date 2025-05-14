@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/api/tweets', require('./routes/tweetRoute'))
 app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api/messages', require('./routes/messageRoutes'))
 
 app.use(errorHandler)
 
