@@ -15,8 +15,7 @@ import TweetForm from './components/TweetForm'
 import UserProfile from './pages/left sidebar/UserProfile'
 import { useSelector } from 'react-redux'
 import Message from './pages/left sidebar/Message'
-
-const socket = io('http://localhost:5000');
+import socket from './components/Socket'
 
 function App() {
   const user = useSelector(state => state.auth.user)
@@ -29,13 +28,7 @@ function App() {
     socket.emit('registerUser', user.id);
     console.log('Sent registerUser with ID:', user.id);
 
-    socket.on('followNotification', (data) => {
-      console.log('Notification:', data.message);
-      // Show notification UI here
-    });
-
     return () => {
-      socket.off('followNotification');
       socket.disconnect();
     };
   }, [user]);
