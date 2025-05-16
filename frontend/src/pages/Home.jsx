@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-// import { io } from 'socket.io-client'
 import { toast } from 'react-toastify'
 import { format } from 'date-fns'
 import Loader from "../components/Loader";
@@ -12,8 +11,6 @@ import TweetItem from "../components/TweetItem";
 import { getAllTweets, resetTweets, createTweet } from '../features/tweets/tweetSlice'
 
 const Home = () => {
-    // const socket = io('http://localhost:5000')
-
     const dispatch = useDispatch()
     const navigate = useNavigate()
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/auth/authSlice'
-import { FaHome, FaSearch, FaTimes } from 'react-icons/fa'
+import { FaHome, FaSearch, FaEnvelope } from 'react-icons/fa'
 import { IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import WhiteLogo from '../../../x-logo/WhiteLogo.png'
@@ -52,6 +52,12 @@ const LeftSidebar = () => {
                             <Link to="/notifications">
                                 <button className="flex items-center gap-4 font-semibold text-2xl w-54 h-12 cursor-pointer hover:bg-gray-800 rounded-full">
                                     <span></span><IoIosNotifications size={22} /> Notifications
+                                </button>
+                            </Link>
+
+                            <Link to="/message">
+                                <button className="flex items-center gap-4 font-semibold text-2xl w-42 h-12 cursor-pointer hover:bg-gray-800 rounded-full">
+                                    <span></span><FaEnvelope size={22} /> Message
                                 </button>
                             </Link>
 

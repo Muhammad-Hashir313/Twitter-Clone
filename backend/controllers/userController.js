@@ -226,6 +226,12 @@ const followUser = asyncHandler(async (req, res) => {
             return res.status(500).json({ message: 'Error in following user' });
         }
 
+        req.io.emit('followNotification', {
+            from: follower_id,
+            to: following_id,
+            message: `User ${follower_id} followed User ${following_id}`
+        })
+
         res.status(200).json({
             follower: follower_id,
             following: following_id

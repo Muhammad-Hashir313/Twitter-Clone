@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { io } from 'socket.io-client'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
@@ -11,8 +13,34 @@ import Notifications from './pages/left sidebar/Notifications'
 import Explore from './pages/left sidebar/Explore'
 import TweetForm from './components/TweetForm'
 import UserProfile from './pages/left sidebar/UserProfile'
+import { useSelector } from 'react-redux'
+import Message from './pages/left sidebar/Message'
+
+const socket = io('http://localhost:5000');
 
 function App() {
+  const user = useSelector(state => state.auth.user)
+
+  useEffect(() => {
+    if (!user || !user.id) return;
+
+    socket.connect(); // Ensure it's connected (in case it was disconnected)
+
+    socket.emit('registerUser', user.id);
+    console.log('Sent registerUser with ID:', user.id);
+
+    socket.on('followNotification', (data) => {
+      console.log('Notification:', data.message);
+      // Show notification UI here
+    });
+
+    return () => {
+      socket.off('followNotification');
+      socket.disconnect();
+    };
+  }, [user]);
+
+
   return (
     <>
       <Router>
@@ -27,6 +55,7 @@ function App() {
           <Route path='/explore' element={<Explore />} />
           <Route path='/post' element={<TweetForm />} />
           <Route path='/profile/:name' element={<UserProfile />} />
+          <Route path='/message' element={<Message />} />
         </Routes>
       </Router>
       <ToastContainer />
