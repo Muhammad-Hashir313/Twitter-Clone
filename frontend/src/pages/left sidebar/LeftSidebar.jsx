@@ -31,7 +31,7 @@ const LeftSidebar = () => {
     return (
         <>
             <div className="fixed text-white w-80 h-full border-r border-white/20">
-                <div className='flex flex-col gap-40'>
+                <div className='flex flex-col gap-25'>
                     <div className='relative top-3 left-12 w-10 flex flex-col items-start gap-10'>
                         <Link to='/home'>
                             <img src={WhiteLogo} alt="X | Logo" className='w-7 relative left-3 top-1' />

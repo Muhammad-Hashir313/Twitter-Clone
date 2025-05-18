@@ -41,7 +41,6 @@ const Home = () => {
         return format(date, 'MMMM yyyy');
     };
 
-
     const [activeTab, setActiveTab] = useState("For You");
 
     const handleCreatePost = (post) => {

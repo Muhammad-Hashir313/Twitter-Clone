@@ -157,7 +157,7 @@ const TweetItem = ({ tweet, user, date }) => {
                                     className="text-white text-sm ml-4 border-l border-white/20 pl-3 py-1 relative"
                                 >
                                     <span className="font-semibold">@
-                                        <Link to={`/profile/${comment.NAME.toLowerCase()}`}>{comment.NAME || "user"}</Link>
+                                        <Link to={`/profile/${comment.NAME ? comment.NAME.toLowerCase() : comment.NAME}`}>{comment.NAME || "user"}</Link>
                                         - </span> {comment.CONTENT}
                                     {user.ID === comment.USER_ID && (
                                         <button

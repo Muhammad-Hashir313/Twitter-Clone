@@ -33,7 +33,6 @@ function App() {
     };
   }, [user]);
 
-
   return (
     <>
       <Router>
