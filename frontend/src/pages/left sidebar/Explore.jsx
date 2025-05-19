@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { searchUser } from '../../features/auth/authSlice'
 import LeftSidebar from './LeftSidebar'
 import { Link } from 'react-router-dom'
+import SearchResult from '../../components/SearchResult'
 // import RightSidebar from '../right sidebar/RightSidebar'
 
 const Explore = () => {
@@ -48,7 +49,7 @@ const Explore = () => {
                         .map((result, index) => (
                             <li key={index} className='cursor-pointer'>
                                 <Link to={`/profile/${result.NAME.toLowerCase()}`}>
-                                    {result.NAME}
+                                    <SearchResult result={result} />
                                 </Link>
                             </li>
                         ))}

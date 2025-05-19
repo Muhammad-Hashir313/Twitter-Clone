@@ -48,6 +48,7 @@ function App() {
           <Route path='/post' element={<TweetForm />} />
           <Route path='/profile/:name' element={<UserProfile />} />
           <Route path='/message' element={<Message />} />
+          <Route path='/messages/:receiverId' element={<Message />} />
         </Routes>
       </Router>
       <ToastContainer />

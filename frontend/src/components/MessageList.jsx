@@ -1,56 +1,59 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { getMessages, sendMessage } from '../features/messsages/messageSlice';
 
 const MessageList = () => {
     const [newMessage, setNewMessage] = useState('');
+    const { receiverId } = useParams();
+    const dispatch = useDispatch();
 
-    // Sample messages - in a real app, these would come from your backend
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            sender: 'other',
-            text: 'Hey there! How are you doing?',
-            timestamp: '10:30 AM'
-        },
-        {
-            id: 2,
-            sender: 'me',
-            text: 'I\'m good! Just working on this Twitter clone project.',
-            timestamp: '10:32 AM'
-        },
-        {
-            id: 3,
-            sender: 'other',
-            text: 'That sounds interesting! What tech stack are you using?',
-            timestamp: '10:33 AM'
-        },
-        {
-            id: 4,
-            sender: 'me',
-            text: 'I\'m using MERN stack with MySQL instead of MongoDB.',
-            timestamp: '10:35 AM'
-        },
-        {
-            id: 5,
-            sender: 'other',
-            text: 'Nice choice! How\'s the progress going?',
-            timestamp: '10:36 AM'
+    const { messages, isLoading } = useSelector(state => state.message);
+    const { user } = useSelector(state => state.auth);
+
+    useEffect(() => {
+        if (receiverId) {
+            dispatch(getMessages(receiverId));
         }
-    ]);
+    }, [dispatch, receiverId]);
 
     // Handle sending a new message
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (newMessage.trim()) {
-            const newMsg = {
-                id: messages.length + 1,
-                sender: 'me',
-                text: newMessage,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setMessages([...messages, newMsg]);
-            setNewMessage('');
+            dispatch(sendMessage({
+                id: receiverId,
+                message: { message: newMessage.trim() }
+            })).then(() => {
+                setNewMessage('');
+                // Refetch messages after sending
+                dispatch(getMessages(receiverId));
+            });
         }
     };
+
+    if (!receiverId) {
+        return (
+            <div style={{
+                position: 'fixed',
+                right: 0,
+                top: 0,
+                width: '43%',
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'black',
+                color: 'white',
+                borderLeft: '1px solid rgb(47, 51, 54)'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 'bold' }}>Select a conversation</h2>
+                    <p style={{ color: '#9CA3AF', marginTop: '8px' }}>Choose a user from the left to start messaging</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={{
@@ -91,8 +94,8 @@ const MessageList = () => {
                         <span style={{ color: '#9CA3AF', fontSize: '16px' }}>U</span>
                     </div>
                     <div>
-                        <h2 style={{ fontWeight: 'bold', fontSize: '14px' }}>Username</h2>
-                        <p style={{ fontSize: '12px', color: '#9CA3AF' }}>@username</p>
+                        <h2 style={{ fontWeight: 'bold', fontSize: '14px' }}>User {receiverId}</h2>
+                        <p style={{ fontSize: '12px', color: '#9CA3AF' }}>@user{receiverId}</p>
                     </div>
                 </div>
             </div>
@@ -109,34 +112,46 @@ const MessageList = () => {
                     gap: '12px',
                     padding: '12px'
                 }}>
-                    {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            style={{
-                                display: 'flex',
-                                justifyContent: message.sender === 'me' ? 'flex-end' : 'flex-start',
-                                width: '100%'
-                            }}
-                        >
-                            <div style={{
-                                maxWidth: '75%',
-                                backgroundColor: message.sender === 'me' ? '#1D9BF0' : '#374151',
-                                borderRadius: message.sender === 'me'
-                                    ? '16px 16px 0 16px'
-                                    : '16px 16px 16px 0',
-                            }}>
-                                <div style={{ padding: '8px 12px' }}>
-                                    <p style={{ fontSize: '14px' }}>{message.text}</p>
-                                    <p style={{
-                                        fontSize: '12px',
-                                        color: '#D1D5DB',
-                                        marginTop: '4px',
-                                        textAlign: 'right'
-                                    }}>{message.timestamp}</p>
+                    {isLoading ? (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                            Loading messages...
+                        </div>
+                    ) : messages.length > 0 ? (
+                        messages.map((message) => (
+                            <div
+                                key={message.ID || message.id}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: message.SENDER_ID === user.id ? 'flex-end' : 'flex-start',
+                                    width: '100%'
+                                }}
+                            >
+                                <div style={{
+                                    maxWidth: '75%',
+                                    backgroundColor: message.SENDER_ID === user.id ? '#1D9BF0' : '#374151',
+                                    borderRadius: message.SENDER_ID === user.id
+                                        ? '16px 16px 0 16px'
+                                        : '16px 16px 16px 0',
+                                }}>
+                                    <div style={{ padding: '8px 12px' }}>
+                                        <p style={{ fontSize: '14px' }}>{message.MESSAGE}</p>
+                                        <p style={{
+                                            fontSize: '12px',
+                                            color: '#D1D5DB',
+                                            marginTop: '4px',
+                                            textAlign: 'right'
+                                        }}>
+                                            {new Date(message.CREATED_AT).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
+                        ))
+                    ) : (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                            No messages yet. Send one to start the conversation!
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
 
