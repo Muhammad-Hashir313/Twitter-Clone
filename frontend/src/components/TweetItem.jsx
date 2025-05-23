@@ -20,10 +20,12 @@ import {
     deleteComment,
     getAllTweets
 } from '../features/tweets/tweetSlice';
+import { useLocation } from "react-router-dom";
 
 const TweetItem = ({ tweet, user, date }) => {
     const dispatch = useDispatch();
     const loggedInUser = useSelector(state => state.auth.user)
+    const location = useLocation();
 
     // LIKES
     const tweet_id = parseInt(tweet.ID)
@@ -76,12 +78,22 @@ const TweetItem = ({ tweet, user, date }) => {
                 {/* Tweet Content */}
                 <div className="flex-1">
                     {/* User Info */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between`">
                         <div className="flex items-center gap-2 relative bottom-1">
                             <span className="font-bold">{user}</span>
                             <span className="text-gray-400">@{user} · {date}</span>
                         </div>
                         {tweet.NAME === loggedInUser.name && (
+                            <span
+                                onClick={() =>
+                                    dispatch(deleteTweet(tweet_id)).then(() => dispatch(getAllTweets()))
+                                }
+                                className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2"
+                            >
+                                <FaTrash size={10} />
+                            </span>
+                        )}
+                        {location.pathname == "/profile" && (
                             <span
                                 onClick={() =>
                                     dispatch(deleteTweet(tweet_id)).then(() => dispatch(getAllTweets()))

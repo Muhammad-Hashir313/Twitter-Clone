@@ -16,6 +16,7 @@ import UserProfile from './pages/left sidebar/UserProfile'
 import { useSelector } from 'react-redux'
 import Message from './pages/left sidebar/Message'
 import socket from './components/Socket'
+import MessageList from './components/MessageList'
 
 function App() {
   const user = useSelector(state => state.auth.user)
@@ -23,7 +24,7 @@ function App() {
   useEffect(() => {
     if (!user || !user.id) return;
 
-    socket.connect(); // Ensure it's connected (in case it was disconnected)
+    socket.connect();
 
     socket.emit('registerUser', user.id);
     console.log('Sent registerUser with ID:', user.id);
@@ -32,6 +33,8 @@ function App() {
       socket.disconnect();
     };
   }, [user]);
+
+  //location.apthname
 
   return (
     <>

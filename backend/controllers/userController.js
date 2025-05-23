@@ -282,5 +282,5 @@ module.exports = {
     getFollowers,
     getFollowing,
     followUser,
-    unfollowUser
+    unfollowUser,
 }

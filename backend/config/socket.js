@@ -1,8 +1,8 @@
-// config/socket.js
 const { Server } = require('socket.io')
+const redis = require('./redis')
 
 let io
-const connectedUsers = new Map()
+let connectedUsers = new Map()
 
 const initializeSocket = (server) => {
     io = new Server(server, {
@@ -13,29 +13,37 @@ const initializeSocket = (server) => {
     })
 
     io.on('connection', (socket) => {
-        console.log('Client connected:', socket.id)
+        socket.on('registerUser', async (user_id) => {
+            connectedUsers.set(socket.id, user_id)
 
-        socket.on('registerUser', (userId) => {
-            if (!userId) return
-            connectedUsers.set(userId, socket.id)
-            console.log(`User ${userId} registered with socket ${socket.id}`)
-            console.log('Current connected users:', connectedUsers)
-        })
+            await redis.set(`user:${user_id}`, socket.id, 'EX', 60 * 60 * 24)
+        });
 
-        socket.on('disconnect', () => {
-            for (const [userId, sId] of connectedUsers.entries()) {
-                if (sId === socket.id) {
-                    connectedUsers.delete(userId)
-                    console.log(`User ${userId} disconnected`)
-                    break
-                }
+        socket.on('disconnect', async () => {
+            const user_id = connectedUsers.get(socket.id)
+            if (user_id) {
+                await redis.del(`user:${user_id}`)
+                connectedUsers.delete(socket.id)
+            } else {
+                console.log("User not found")
             }
-            console.log('Current connected users:', connectedUsers)
-        })
-    })
+        });
+    });
 }
 
 const getIO = () => io
-const getConnectedUsers = () => connectedUsers
+
+const getConnectedUsers = async () => {
+    const keys = await redis.keys('user:*')
+    const users = {}
+
+    for (const key of keys) {
+        const user_id = key.split(':')[1]
+        const socket_id = await redis.get(key)
+        users[user_id] = socket_id
+    }
+
+    return users
+}
 
 module.exports = { initializeSocket, getIO, getConnectedUsers }

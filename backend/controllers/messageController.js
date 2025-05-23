@@ -5,7 +5,9 @@ const conn = require('../config/db')
 // @route   GET /api/messages/chats
 // @access  Private
 const getChats = asyncHandler(async (req, res) => {
-    conn.query('SELECT * FROM CHATS WHERE SENDER_ID = ?', [req.user.ID], (err, result) => {
+    const query = "SELECT DISTINCT CASE WHEN SENDER_ID = ? THEN RECEIVER_ID ELSE SENDER_ID END AS user_id FROM CHATS WHERE SENDER_ID = ? OR RECEIVER_ID = ?"
+
+    conn.query(query, [req.user.ID, req.user.ID, req.user.ID], (err, result) => {
         if (err) throw err
         res.status(200).json(result)
     })
@@ -18,7 +20,7 @@ const getMessages = asyncHandler(async (req, res) => {
     const receiver_id = parseInt(req.params.id)
     const sender_id = req.user.ID
 
-    conn.query('SELECT * FROM MESSAGES WHERE SENDER_ID = ? AND RECEIVER_ID = ?', [sender_id, receiver_id], (err, result) => {
+    conn.query('SELECT * FROM MESSAGES WHERE (SENDER_ID = ? AND RECEIVER_ID = ?) OR (RECEIVER_ID = ? AND SENDER_ID = ?)', [sender_id, receiver_id, sender_id, receiver_id], (err, result) => {
         if (err) throw err
         res.status(200).json(result)
     })
