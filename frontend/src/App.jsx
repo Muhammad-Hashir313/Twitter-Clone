@@ -16,7 +16,6 @@ import UserProfile from './pages/left sidebar/UserProfile'
 import { useSelector } from 'react-redux'
 import Message from './pages/left sidebar/Message'
 import socket from './components/Socket'
-import MessageList from './components/MessageList'
 
 function App() {
   const user = useSelector(state => state.auth.user)

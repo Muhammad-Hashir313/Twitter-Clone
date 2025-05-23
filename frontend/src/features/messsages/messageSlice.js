@@ -7,7 +7,8 @@ const initialState = {
     isLoading: false,
     isSuccess: false,
     isError: false,
-    message: ''
+    message: '',
+    currentReceiverId: null
 }
 
 export const getChats = createAsyncThunk('message/getChats', async (_, thunkAPI) => {
@@ -22,8 +23,10 @@ export const getChats = createAsyncThunk('message/getChats', async (_, thunkAPI)
 
 export const getMessages = createAsyncThunk('message/getMessages', async (id, thunkAPI) => {
     try {
+        console.log('Getting messages for receiverId:', id)
         const token = thunkAPI.getState().auth.user.token
-        return await messageService.getMessages(token, id)
+        const result = await messageService.getMessages(token, id)
+        return { messages: result, receiverId: id }
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -33,8 +36,8 @@ export const getMessages = createAsyncThunk('message/getMessages', async (id, th
 export const sendMessage = createAsyncThunk('message/sendMessage', async ({ id, message }, thunkAPI) => {
     try {
         const token = thunkAPI.getState().auth.user.token
-
-        return await messageService.sendMessage(id, message, token)
+        const result = await messageService.sendMessage(id, message, token)
+        return { messages: result, receiverId: id }
     } catch (error) {
         const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
         return thunkAPI.rejectWithValue(message)
@@ -45,6 +48,9 @@ export const messageSlice = createSlice({
     name: 'message',
     initialState,
     reducers: {
+        resetMessages: (state) => {
+            state.messages = []
+        },
         reset: (state) => initialState
     },
     extraReducers: (builder) => {
@@ -62,13 +68,19 @@ export const messageSlice = createSlice({
                 state.isError = true
                 state.message = action.payload
             })
-            .addCase(getMessages.pending, (state) => {
+            .addCase(getMessages.pending, (state, action) => {
                 state.isLoading = true
+                // Clear messages when starting to fetch for a different receiver
+                if (state.currentReceiverId !== action.meta.arg) {
+                    state.messages = []
+                    state.currentReceiverId = action.meta.arg
+                }
             })
             .addCase(getMessages.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
-                state.messages = action.payload
+                state.currentReceiverId = action.payload.receiverId
+                state.messages = action.payload.messages
             })
             .addCase(getMessages.rejected, (state, action) => {
                 state.isLoading = false
@@ -76,12 +88,15 @@ export const messageSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(sendMessage.pending, (state) => {
-                state.isLoading = true
+                state.isLoading = false // Don't show loading when sending (we handle this locally)
             })
             .addCase(sendMessage.fulfilled, (state, action) => {
                 state.isLoading = false
                 state.isSuccess = true
-                state.messages = action.payload
+                // Only update messages if it's for the current conversation
+                if (state.currentReceiverId === action.payload.receiverId) {
+                    state.messages = action.payload.messages
+                }
             })
             .addCase(sendMessage.rejected, (state, action) => {
                 state.isLoading = false
@@ -91,5 +106,5 @@ export const messageSlice = createSlice({
     }
 })
 
-export const { reset } = messageSlice.actions
+export const { reset, resetMessages } = messageSlice.actions
 export default messageSlice.reducer
