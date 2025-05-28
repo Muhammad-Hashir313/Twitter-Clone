@@ -28,6 +28,8 @@ const UserProfile = () => {
             dispatch(getUserProfile(name))
         }
 
+        console.log(anotherUser);
+
         if (anotherUser?.userData?.ID) {
             dispatch(getFollowers(anotherUser?.userData?.ID))
             dispatch(getFollowing(anotherUser?.userData?.ID))

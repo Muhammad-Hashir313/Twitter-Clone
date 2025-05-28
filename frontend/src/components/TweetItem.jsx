@@ -88,7 +88,7 @@ const TweetItem = ({ tweet, user, date }) => {
                                 onClick={() =>
                                     dispatch(deleteTweet(tweet_id)).then(() => dispatch(getAllTweets()))
                                 }
-                                className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2"
+                                className="flex gap-1 hover:text-blue-400 cursor-pointer relative left-[63%]"
                             >
                                 <FaTrash size={10} />
                             </span>
@@ -98,7 +98,7 @@ const TweetItem = ({ tweet, user, date }) => {
                                 onClick={() =>
                                     dispatch(deleteTweet(tweet_id)).then(() => dispatch(getAllTweets()))
                                 }
-                                className="flex gap-1 hover:text-blue-400 cursor-pointer relative -left-2"
+                                className="flex gap-1 hover:text-blue-400 cursor-pointer relative left-[63%]"
                             >
                                 <FaTrash size={10} />
                             </span>
