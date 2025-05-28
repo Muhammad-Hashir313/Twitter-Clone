@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getMessages, sendMessage } from '../features/messsages/messageSlice';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUser, FaPaperPlane, FaComments } from 'react-icons/fa';
 import socket from './Socket';
 
 const MessageList = () => {
@@ -273,128 +273,235 @@ const MessageList = () => {
         return isOnline;
     };
 
-    // Debug connection status display (only in development)
-    const connectionStatus = (
-        <div className={`absolute top-1 right-1 h-2 w-2 rounded-full ${socketConnected ? 'bg-green-500' : 'bg-red-500'}`}
-            title={socketConnected ? 'Connected' : 'Disconnected'} />
-    );
+    // Handle Enter key press
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey && !isSending) {
+            e.preventDefault();
+            handleSendMessage(e);
+        }
+    };
 
     if (!receiverId) {
         return (
-            <div className="fixed right-0 top-0 w-[43%] h-[100vh] flex justify-center items-center bg-black text-white border-l border-white/20">
-                {connectionStatus}
-                <div className="text-center">
-                    <h2 className="text-xl font-bold">Select a conversation</h2>
-                    <p className="text-gray-400 mt-2">Choose a user from the left to start messaging</p>
+            <div className="fixed right-0 top-0 w-[43%] h-[100vh] flex justify-center items-center bg-black text-white">
+                {/* Glassmorphism border effect */}
+                <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-gray-600/50 to-transparent"></div>
+
+                {/* Connection status indicator positioned absolutely */}
+                <div className={`absolute top-4 right-4 h-3 w-3 rounded-full ${socketConnected ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-red-500'} transition-all duration-300`}
+                    title={socketConnected ? 'Connected' : 'Disconnected'}>
+                    {socketConnected && (
+                        <div className="absolute inset-0 bg-green-400 rounded-full animate-pulse"></div>
+                    )}
+                </div>
+
+                <div className="text-center space-y-6">
+                    <div className="relative">
+                        <div className="w-24 h-24 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center mx-auto shadow-2xl">
+                            <FaComments className="text-gray-500 text-3xl" />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-600/20 to-gray-700/20 rounded-full blur-xl"></div>
+                    </div>
+                    <div className="space-y-2">
+                        <h2 className="text-xl font-bold text-white">Select a conversation</h2>
+                        <p className="text-gray-400 max-w-md">Choose a user from the left to start messaging and see your chat history</p>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="fixed right-0 top-0 w-[43%] h-[100vh] flex flex-col bg-black text-white border-l border-white/20">
-            {connectionStatus}
-            {/* Chat header */}
-            <div className="flex items-center h-16 border-b border-white/20 px-4">
-                <div className="flex items-center gap-3">
-                    <div className="relative w-10 h-10">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                            <FaUserCircle className="text-white text-xl" />
-                        </div>
-                        {/* Online/Offline indicator */}
-                        <div className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border border-black ${isUserOnline(receiverId) ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h2 className="font-bold">User {receiverId}</h2>
-                            <span className={`text-xs ${isUserOnline(receiverId) ? 'text-green-500' : 'text-gray-500'}`}>
-                                {isUserOnline(receiverId) ? 'Online' : 'Offline'}
-                            </span>
-                        </div>
-                        <p className="text-xs text-gray-400">@user{receiverId}</p>
-                    </div>
-                </div>
+        <div className="fixed right-0 top-0 w-[43%] h-[100vh] flex flex-col bg-black text-white">
+            {/* Glassmorphism border effect */}
+            <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-gray-600/50 to-transparent"></div>
+
+            {/* Connection status indicator */}
+            <div className={`absolute top-4 right-4 h-3 w-3 rounded-full z-10 ${socketConnected ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-red-500'} transition-all duration-300`}
+                title={socketConnected ? 'Connected' : 'Disconnected'}>
+                {socketConnected && (
+                    <div className="absolute inset-0 bg-green-400 rounded-full animate-pulse"></div>
+                )}
             </div>
 
-            {/* Messages area */}
-            <div className="flex-grow overflow-y-auto" ref={messagesContainerRef}>
-                <div className="flex flex-col w-full gap-3 p-4">
-                    {isLoading && !isSending && localMessages.length === 0 ? (
-                        <div className="text-center py-8">
-                            Loading messages...
+            {/* Enhanced Chat header with glassmorphism */}
+            <div className="flex-shrink-0 backdrop-blur-lg bg-black/50 border-b border-white/10">
+                <div className="h-4"></div>
+                <div className="flex items-center">
+                    <div className="w-4"></div>
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/25">
+                                <FaUser className="text-white text-xl" />
+                            </div>
+                            {/* Enhanced Online/Offline indicator */}
+                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-black transition-all duration-300 ${isUserOnline(receiverId)
+                                    ? 'bg-green-500 shadow-lg shadow-green-500/50'
+                                    : 'bg-gray-500'
+                                }`}>
+                                {isUserOnline(receiverId) && (
+                                    <div className="absolute inset-0 bg-green-400 rounded-full animate-pulse"></div>
+                                )}
+                            </div>
                         </div>
-                    ) : localMessages.length > 0 ? (
-                        <>
-                            {localMessages.map((message) => (
-                                <div
-                                    key={message.ID || message.id}
-                                    className={`flex ${message.SENDER_ID === user.id ? 'justify-end' : 'justify-start'} w-full`}
-                                    style={{ border: '1px solid transparent' }}
-                                >
-                                    <div className={`max-w-[75%] ${message.SENDER_ID === user.id ? 'bg-blue-500' : 'bg-gray-700'} 
-                                        ${message.SENDER_ID === user.id ? 'rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'rounded-tr-2xl rounded-tl-2xl rounded-br-2xl'}`}
-                                        style={{ border: '0.5px solid transparent' }}
-                                    >
-                                        <div style={{ margin: '12px', width: 'calc(100% - 24px)', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
-                                            <p className="text-sm">{message.MESSAGE}</p>
-                                            <div style={{ height: '6px' }}></div>
-                                            <p className="text-xs text-gray-300 text-right">
-                                                {new Date(message.CREATED_AT).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </p>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h2 className="font-bold text-lg bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                    User {receiverId}
+                                </h2>
+                                <span className={`text-xs font-medium transition-colors duration-200 ${isUserOnline(receiverId) ? 'text-green-400' : 'text-gray-500'
+                                    }`}>
+                                    {isUserOnline(receiverId) ? 'Online' : 'Offline'}
+                                </span>
+                            </div>
+                            <p className="text-xs text-gray-400">@user{receiverId}</p>
+                        </div>
+                    </div>
+                    <div className="w-4"></div>
+                </div>
+                <div className="h-4"></div>
+            </div>
+
+            {/* Messages area with custom scrollbar */}
+            <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent" ref={messagesContainerRef}>
+                <div className="h-4"></div>
+
+                {isLoading && !isSending && localMessages.length === 0 ? (
+                    <div className="text-center">
+                        <div className="h-32"></div>
+                        <div className="space-y-4">
+                            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                            <p className="text-gray-400">Loading messages...</p>
+                        </div>
+                    </div>
+                ) : localMessages.length > 0 ? (
+                    <div className="space-y-4">
+                        <div className="pl-4 pr-4">
+                            {localMessages.map((message, idx) => (
+                                <div key={message.ID || message.id || idx} className="group">
+                                    <div className="flex gap-4 w-full">
+                                        {/* Avatar */}
+                                        {message.SENDER_ID !== user.id && (
+                                            <div className="flex-shrink-0">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-gray-800 group-hover:ring-green-500/50 transition-all duration-300">
+                                                    <FaUser className="text-white text-sm" />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Message content */}
+                                        <div className={`flex-1 min-w-0 ${message.SENDER_ID === user.id ? 'flex justify-end' : ''}`}>
+                                            <div className={`max-w-[75%] ${message.SENDER_ID === user.id ? 'order-2' : ''}`}>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className={`text-sm font-semibold ${message.SENDER_ID === user.id ? 'text-blue-400' : 'text-green-400'
+                                                        }`}>
+                                                        {message.SENDER_ID === user.id ? 'You' : `User ${receiverId}`}
+                                                    </span>
+                                                    <span className="text-gray-600 text-xs">
+                                                        {new Date(message.CREATED_AT).toLocaleTimeString([], {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </span>
+                                                </div>
+                                                <div className={`rounded-2xl border transition-all duration-300 group-hover:border-opacity-60 ${message.SENDER_ID === user.id
+                                                        ? 'bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/20 group-hover:border-blue-500/40'
+                                                        : 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/30 group-hover:border-gray-600/50'
+                                                    }`}>
+                                                    <div className="px-4 py-3">
+                                                        <p className="text-gray-200 leading-relaxed break-words">
+                                                            {message.MESSAGE}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
+                                        {/* Avatar for sent messages */}
+                                        {message.SENDER_ID === user.id && (
+                                            <div className="flex-shrink-0">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-gray-800 group-hover:ring-blue-500/50 transition-all duration-300">
+                                                    <FaUser className="text-white text-sm" />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
+                                    <div className="h-6"></div>
                                 </div>
                             ))}
-                            {/* Empty div for scrolling to bottom reference */}
-                            <div ref={messagesEndRef} />
-                        </>
-                    ) : (
-                        <div className="text-center py-8">
-                            No messages yet. Send one to start the conversation!
                         </div>
-                    )}
-                </div>
+                        <div ref={messagesEndRef} />
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center min-h-96">
+                        <div className="text-center space-y-6">
+                            <div className="relative">
+                                <div className="w-24 h-24 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center mx-auto shadow-2xl">
+                                    <FaComments className="text-gray-500 text-3xl" />
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-gray-600/20 to-gray-700/20 rounded-full blur-xl"></div>
+                            </div>
+                            <div className="space-y-2">
+                                <h3 className="text-xl font-semibold text-white">
+                                    Start the conversation
+                                </h3>
+                                <p className="text-gray-400 max-w-md">
+                                    No messages yet. Send a message to begin chatting with User {receiverId}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {/* Message input */}
-            <div className="border-t border-white/20">
-                <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '8px', margin: '16px' }}>
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type a message..."
-                        style={{
-                            flexGrow: 1,
-                            height: '40px',
-                            borderRadius: '9999px',
-                            backgroundColor: '#374151',
-                            color: 'white',
-                            fontSize: '14px',
-                            textIndent: '16px',
-                            outline: 'none'
-                        }}
-                    />
-                    <button
-                        type="submit"
-                        disabled={!newMessage.trim() || isSending || !socketConnected}
-                        style={{
-                            height: '40px',
-                            width: '40px',
-                            borderRadius: '50%',
-                            backgroundColor: !newMessage.trim() || isSending || !socketConnected ? 'rgba(29, 155, 240, 0.5)' : '#1D9BF0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                            cursor: !newMessage.trim() || isSending || !socketConnected ? 'default' : 'pointer'
-                        }}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                    </button>
-                </form>
+            {/* Input area */}
+            <div className="flex-shrink-0 border-t border-gray-800/50 bg-black/80 backdrop-blur-sm">
+                <div className="h-4"></div>
+                <div className="w-full max-w-4xl mx-auto">
+                    <div className="pl-4 pr-4">
+                        <div className="relative">
+                            {/* Gradient border effect */}
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-50 blur-sm"></div>
+
+                            <div className="relative flex bg-gray-900/50 border border-gray-700/50 rounded-2xl overflow-hidden backdrop-blur-sm focus-within:border-blue-500/50 focus-within:bg-gray-900/80 transition-all duration-300">
+                                <div className="flex-1 flex items-center gap-3">
+                                    <div className="w-4"></div>
+                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <FaUser className="text-white text-xs" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Type your message... (Press Enter to send)"
+                                        className="flex-1 bg-transparent text-gray-200 outline-none placeholder-gray-500 py-4"
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyDown={handleKeyPress}
+                                        disabled={isSending}
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleSendMessage}
+                                    disabled={isSending || !newMessage.trim() || !socketConnected}
+                                    className={`
+                                        flex items-center justify-center transition-all duration-300 transform m-2 w-14 h-14 rounded-2xl
+                                        ${isSending || !newMessage.trim() || !socketConnected
+                                            ? "bg-gray-700 cursor-not-allowed text-gray-400"
+                                            : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+                                        }
+                                    `}
+                                >
+                                    {isSending ? (
+                                        <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                    ) : (
+                                        <FaPaperPlane className="text-sm" />
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="h-6"></div>
             </div>
         </div>
     );

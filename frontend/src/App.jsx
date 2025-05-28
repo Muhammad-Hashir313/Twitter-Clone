@@ -16,6 +16,7 @@ import UserProfile from './pages/left sidebar/UserProfile'
 import { useSelector } from 'react-redux'
 import Message from './pages/left sidebar/Message'
 import socket from './components/Socket'
+import Chatbot from './components/ChatBot'
 
 function App() {
   const user = useSelector(state => state.auth.user)
@@ -51,6 +52,7 @@ function App() {
           <Route path='/profile/:name' element={<UserProfile />} />
           <Route path='/message' element={<Message />} />
           <Route path='/messages/:receiverId' element={<Message />} />
+          <Route path='/chatbot' element={<Chatbot />} />
         </Routes>
       </Router>
       <ToastContainer />

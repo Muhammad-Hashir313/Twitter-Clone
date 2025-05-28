@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/auth/authSlice'
-import { FaHome, FaSearch, FaEnvelope, FaBars, FaTimes } from 'react-icons/fa'
+import { FaHome, FaSearch, FaEnvelope, FaBars, FaTimes, FaRobot } from 'react-icons/fa'
 import { IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import WhiteLogo from '../../../x-logo/WhiteLogo.png'
@@ -33,6 +33,7 @@ const LeftSidebar = () => {
         { path: '/home', icon: FaHome, label: 'Home' },
         { path: '/explore', icon: FaSearch, label: 'Explore' },
         { path: '/notifications', icon: IoIosNotifications, label: 'Notifications' },
+        { path: '/chatbot', icon: FaRobot, label: 'ChatBot AI' },
         { path: '/message', icon: FaEnvelope, label: 'Messages' },
         { path: '/profile', icon: CgProfile, label: 'Profile' }
     ]

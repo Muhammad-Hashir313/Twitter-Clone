@@ -25,6 +25,7 @@ app.use((req, res, next) => {
 app.use('/api/tweets', require('./routes/tweetRoute'))
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api/messages', require('./routes/messageRoutes'))
+app.use("/api", require("./routes/chatbotRoute"));
 
 app.use(errorHandler)
 
