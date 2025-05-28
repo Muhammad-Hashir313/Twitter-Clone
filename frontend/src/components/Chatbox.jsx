@@ -20,6 +20,7 @@ const Chatbox = () => {
     useEffect(() => {
         // Fetch chats when component mounts
         dispatch(getChats())
+
     }, [dispatch])
 
     // Improved setup for socket listeners for real-time chat updates and online status
@@ -102,8 +103,7 @@ const Chatbox = () => {
     // Enhanced check if a user is online with debugging
     const isUserOnline = (userId) => {
         const isOnline = onlineUsers.includes(Number(userId));
-        console.log(`Chatbox checking if user ${userId} is online:`, isOnline,
-            "Online users in Chatbox:", onlineUsers);
+
         return isOnline;
     };
 
@@ -224,8 +224,8 @@ const Chatbox = () => {
                                                         </div>
                                                         {/* Enhanced online status indicator */}
                                                         <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-black transition-all duration-300 ${isUserOnline(chat.user_id)
-                                                                ? 'bg-green-500 shadow-lg shadow-green-500/50'
-                                                                : 'bg-gray-500'
+                                                            ? 'bg-green-500 shadow-lg shadow-green-500/50'
+                                                            : 'bg-gray-500'
                                                             }`}>
                                                             {isUserOnline(chat.user_id) && (
                                                                 <div className="absolute inset-0 bg-green-400 rounded-full animate-pulse"></div>
@@ -239,11 +239,11 @@ const Chatbox = () => {
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2">
                                                             <p className="font-semibold text-white group-hover:text-blue-300 transition-colors duration-200">
-                                                                User {chat.user_id}
+                                                                {chat.NAME}
                                                             </p>
                                                             <span className={`text-xs font-medium transition-colors duration-200 ${isUserOnline(chat.user_id)
-                                                                    ? 'text-green-400'
-                                                                    : 'text-gray-500'
+                                                                ? 'text-green-400'
+                                                                : 'text-gray-500'
                                                                 }`}>
                                                                 {isUserOnline(chat.user_id) ? 'Online' : 'Offline'}
                                                             </span>

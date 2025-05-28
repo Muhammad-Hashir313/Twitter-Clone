@@ -100,6 +100,12 @@ const unfollowUser = async (userData, token) => {
     return response.data
 }
 
+const getUser = async (userData) => {
+    const res = await axios.post(`${API_URL}anotherUser`, userData)
+
+    return res.data
+}
+
 const authService = {
     register,
     login,
@@ -109,7 +115,8 @@ const authService = {
     getFollowers,
     getFollowing,
     followUser,
-    unfollowUser
+    unfollowUser,
+    getUser
 }
 
 export default authService

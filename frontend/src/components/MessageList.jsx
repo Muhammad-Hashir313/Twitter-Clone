@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getMessages, sendMessage } from '../features/messsages/messageSlice';
 import { FaUser, FaPaperPlane, FaComments } from 'react-icons/fa';
 import socket from './Socket';
+import { getUser } from '../features/auth/authSlice';
 
 const MessageList = () => {
     const [newMessage, setNewMessage] = useState('');
@@ -18,7 +19,7 @@ const MessageList = () => {
     const currentChatRef = useRef(null);
 
     const { messages, isLoading } = useSelector(state => state.message);
-    const { user } = useSelector(state => state.auth);
+    const { name, user } = useSelector(state => state.auth);
 
     // Function to scroll to bottom of messages instantly
     const scrollToBottom = () => {
@@ -30,10 +31,8 @@ const MessageList = () => {
     // Enhanced setup for socket connection status monitoring and online users tracking
     useEffect(() => {
         // Log socket connection status
-        console.log("Socket initially connected:", socket.connected);
 
         const onConnect = () => {
-            console.log("Socket connected");
             setSocketConnected(true);
 
             // Request online users list immediately after connecting
@@ -41,19 +40,16 @@ const MessageList = () => {
         };
 
         const onDisconnect = () => {
-            console.log("Socket disconnected");
             setSocketConnected(false);
         };
 
         // Handler for receiving online users list - this is now from Redis
         const handleOnlineUsers = (users) => {
-            console.log("Online users received from Redis:", users);
             setOnlineUsers(users || []);
         };
 
         // Handler for user status updates
         const handleUserStatus = ({ userId, status }) => {
-            console.log(`User ${userId} is now ${status}`);
 
             setOnlineUsers(prev => {
                 if (status === 'online' && !prev.includes(userId)) {
@@ -73,16 +69,13 @@ const MessageList = () => {
 
         // Force request online users list on component mount
         if (socket.connected) {
-            console.log("Already connected - requesting online users");
             socket.emit('getOnlineUsers');
         } else {
-            console.log("Attempting to connect socket");
             socket.connect();
         }
 
         // Debug registered listeners
-        console.log("Socket has onlineUsers listeners:",
-            socket.hasListeners('onlineUsers'));
+        socket.hasListeners('onlineUsers');
 
         return () => {
             socket.off('connect', onConnect);
@@ -98,14 +91,12 @@ const MessageList = () => {
         setLocalMessages([]);
         currentChatRef.current = receiverId;
 
-        console.log(`Changed to conversation with ${receiverId}, cleared messages`);
     }, [receiverId, user?.id]);
 
     // Update local messages when redux messages change
     useEffect(() => {
         // Only update if this is for the current conversation
         if (messages && messages.length > 0 && receiverId === currentChatRef.current) {
-            console.log(`Updating local messages from redux for receiverId: ${receiverId}`, messages);
 
             // Replace messages completely instead of merging to ensure clean state
             setLocalMessages(messages);
@@ -114,11 +105,9 @@ const MessageList = () => {
 
     // Set up socket listeners for real-time messages
     useEffect(() => {
-        console.log("Setting up socket listener for receiverId:", receiverId);
 
         // Define the message handler
         const handleNewMessage = (data) => {
-            console.log('Received message via socket:', data);
 
             // Only add to current chat if it's from the current conversation
             const isCurrentConversation =
@@ -126,7 +115,6 @@ const MessageList = () => {
                 (data.senderId === user.id && data.receiverId === Number(receiverId));
 
             if (isCurrentConversation && receiverId === currentChatRef.current) {
-                console.log("Message belongs to current conversation, adding to state");
 
                 // Create message object that matches our expected format
                 const newMsg = {
@@ -154,7 +142,6 @@ const MessageList = () => {
                         return prevMessages;
                     }
 
-                    console.log("Adding new message to local state");
                     return [...prevMessages, newMsg];
                 });
 
@@ -172,7 +159,6 @@ const MessageList = () => {
         socket.on('receiveMessage', handleNewMessage);
 
         return () => {
-            console.log("Cleaning up socket listener");
             socket.off('receiveMessage', handleNewMessage);
         };
     }, [receiverId, user?.id]);
@@ -184,7 +170,6 @@ const MessageList = () => {
 
     useEffect(() => {
         if (receiverId && user?.id) {
-            console.log(`Joining room for conversation between ${user.id} and ${receiverId}`);
 
             // Set current conversation
             currentChatRef.current = receiverId;
@@ -198,10 +183,10 @@ const MessageList = () => {
                     // Scroll to bottom after messages are loaded
                     setTimeout(scrollToBottom, 50);
                 });
+            dispatch(getUser({ id: receiverId }))
 
             // Clean up when leaving the conversation
             return () => {
-                console.log(`Leaving room for conversation between ${user.id} and ${receiverId}`);
                 socket.emit('leaveRoom', { userId: user.id, receiverId: Number(receiverId) });
             };
         }
@@ -217,7 +202,6 @@ const MessageList = () => {
             const messageToSend = newMessage.trim();
             setNewMessage('');
 
-            console.log(`Sending message to ${receiverId}: ${messageToSend}`);
 
             // Generate a consistent ID for this message to help with deduplication
             const tempMessageId = `temp-${Date.now()}`;
@@ -243,7 +227,6 @@ const MessageList = () => {
                 createdAt: messageObject.CREATED_AT
             });
 
-            console.log("Socket message emitted");
 
             // Scroll to bottom immediately
             scrollToBottom();
@@ -254,7 +237,6 @@ const MessageList = () => {
                 message: { message: messageToSend, tempId: tempMessageId }
             })).then(() => {
                 setIsSending(false);
-                console.log("Message sent via API");
 
                 // Don't reload messages from API to prevent duplicates
                 // The socket will handle real-time updates
@@ -268,8 +250,7 @@ const MessageList = () => {
     // Check if a user is online - include debug info
     const isUserOnline = (userId) => {
         const isOnline = onlineUsers.includes(Number(userId));
-        console.log(`Checking if user ${userId} is online:`, isOnline,
-            "Online users:", onlineUsers);
+        "Online users:", onlineUsers;
         return isOnline;
     };
 
@@ -297,7 +278,7 @@ const MessageList = () => {
 
                 <div className="text-center space-y-6">
                     <div className="relative">
-                        <div className="w-24 h-24 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center mx-auto shadow-2xl">
+                        <div className="relative left-[38%] -top-5 w-24 h-24 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center mx-auto shadow-2xl">
                             <FaComments className="text-gray-500 text-3xl" />
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-r from-gray-600/20 to-gray-700/20 rounded-full blur-xl"></div>
@@ -336,8 +317,8 @@ const MessageList = () => {
                             </div>
                             {/* Enhanced Online/Offline indicator */}
                             <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-black transition-all duration-300 ${isUserOnline(receiverId)
-                                    ? 'bg-green-500 shadow-lg shadow-green-500/50'
-                                    : 'bg-gray-500'
+                                ? 'bg-green-500 shadow-lg shadow-green-500/50'
+                                : 'bg-gray-500'
                                 }`}>
                                 {isUserOnline(receiverId) && (
                                     <div className="absolute inset-0 bg-green-400 rounded-full animate-pulse"></div>
@@ -347,14 +328,14 @@ const MessageList = () => {
                         <div>
                             <div className="flex items-center gap-2">
                                 <h2 className="font-bold text-lg bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                    User {receiverId}
+                                    {name?.NAME}
                                 </h2>
                                 <span className={`text-xs font-medium transition-colors duration-200 ${isUserOnline(receiverId) ? 'text-green-400' : 'text-gray-500'
                                     }`}>
                                     {isUserOnline(receiverId) ? 'Online' : 'Offline'}
                                 </span>
                             </div>
-                            <p className="text-xs text-gray-400">@user{receiverId}</p>
+                            <p className="text-xs text-gray-400">@{name?.NAME}</p>
                         </div>
                     </div>
                     <div className="w-4"></div>
@@ -405,8 +386,8 @@ const MessageList = () => {
                                                     </span>
                                                 </div>
                                                 <div className={`rounded-2xl border transition-all duration-300 group-hover:border-opacity-60 ${message.SENDER_ID === user.id
-                                                        ? 'bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/20 group-hover:border-blue-500/40'
-                                                        : 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/30 group-hover:border-gray-600/50'
+                                                    ? 'bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/20 group-hover:border-blue-500/40'
+                                                    : 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-gray-700/30 group-hover:border-gray-600/50'
                                                     }`}>
                                                     <div className="px-4 py-3">
                                                         <p className="text-gray-200 leading-relaxed break-words">

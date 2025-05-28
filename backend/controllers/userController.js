@@ -37,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
                     return res.status(500).json({ message: 'Error registering user!' })
                 }
 
-                conn.query('SELECT * FROM USERS WHERE ID = ?', [results.insertId], (err, results) => {
+                conn.query('SELECT ID, NAME, EMAIL, PROFILE_PIC, CREATED_AT FROM USERS WHERE ID = ?', [results.insertId], (err, results) => {
                     if (err) {
                         console.error(err)
                         return res.status(500).json({ message: 'Error getting user!' })
@@ -47,6 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
                         id: results[0].ID,
                         name: results[0].NAME,
                         email: results[0].EMAIL,
+                        profilePic: results[0].PROFILE_PIC,
                         token: generateToken(results[0].ID),
                         createdAt: results[0].CREATED_AT
                     }
@@ -90,6 +91,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 id: user.ID,
                 name: user.NAME,
                 email: email,
+                profilePic: user.PROFILE_PIC,
                 token: generateToken(user.ID),
                 createdAt: user.CREATED_AT
             })
@@ -118,7 +120,7 @@ const searchUser = asyncHandler(async (req, res) => {
         throw new Error('Please enter field')
     }
 
-    conn.query('SELECT * FROM USERS WHERE NAME LIKE ?', [`${name}%`], (err, results) => {
+    conn.query('SELECT ID, NAME, EMAIL, PROFILE_PIC FROM USERS WHERE NAME LIKE ?', [`${name}%`], (err, results) => {
         if (err) {
             console.error(err)
             res.status(500).json({ message: 'Error searching user' })
@@ -266,6 +268,66 @@ const unfollowUser = asyncHandler(async (req, res) => {
     })
 })
 
+const getUser = asyncHandler(async (req, res) => {
+    const { id } = req.body
+
+    conn.query('SELECT NAME FROM USERS WHERE ID = ?', [id], (err, result) => {
+        if (err) throw err;
+        res.status(200).json(result[0])
+    })
+})
+
+// @desc    Upload Profile Picture
+// @route   POST /api/users/profile-pic
+// @access  Private
+const uploadProfilePic = asyncHandler(async (req, res) => {
+    const { profilePic } = req.body
+    const userId = req.user.ID
+
+    if (!profilePic) {
+        res.status(400)
+        throw new Error('Please provide profile picture URL')
+    }
+
+    conn.query('UPDATE USERS SET PROFILE_PIC = ? WHERE ID = ?', [profilePic, userId], (err, results) => {
+        if (err) {
+            console.error(err)
+            return res.status(500).json({ message: 'Error updating profile picture' })
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+
+        res.status(200).json({
+            message: 'Profile picture updated successfully',
+            profilePic: profilePic
+        })
+    })
+})
+
+// @desc    Remove Profile Picture
+// @route   DELETE /api/users/profile-pic
+// @access  Private
+const removeProfilePic = asyncHandler(async (req, res) => {
+    const userId = req.user.ID
+
+    conn.query('UPDATE USERS SET PROFILE_PIC = NULL WHERE ID = ?', [userId], (err, results) => {
+        if (err) {
+            console.error(err)
+            return res.status(500).json({ message: 'Error removing profile picture' })
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+
+        res.status(200).json({
+            message: 'Profile picture removed successfully'
+        })
+    })
+})
+
 // Generate JWT Token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -283,4 +345,5 @@ module.exports = {
     getFollowing,
     followUser,
     unfollowUser,
+    getUser
 }
