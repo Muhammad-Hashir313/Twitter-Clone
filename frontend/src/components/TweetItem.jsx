@@ -8,7 +8,6 @@ import {
     FaUser,
     FaTrash,
     FaClock,
-    FaCheckCircle
 } from "react-icons/fa";
 import { FiShare, FiMoreHorizontal } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -115,7 +114,6 @@ const TweetItem = ({ tweet, user, date }) => {
                                         {user}
                                     </span>
                                 </Link>
-                                <FaCheckCircle className="text-blue-500 text-sm flex-shrink-0" />
                                 <span className="text-gray-500 text-sm">@{user}</span>
                                 <span className="text-gray-600">·</span>
                                 <div className="flex items-center gap-1 text-gray-500 text-sm">
