@@ -269,63 +269,13 @@ const unfollowUser = asyncHandler(async (req, res) => {
 })
 
 const getUser = asyncHandler(async (req, res) => {
-    const { id } = req.body
+    const id = parseInt(req.body.id)
 
     conn.query('SELECT NAME FROM USERS WHERE ID = ?', [id], (err, result) => {
-        if (err) throw err;
+        if (err) throw err
         res.status(200).json(result[0])
     })
-})
 
-// @desc    Upload Profile Picture
-// @route   POST /api/users/profile-pic
-// @access  Private
-const uploadProfilePic = asyncHandler(async (req, res) => {
-    const { profilePic } = req.body
-    const userId = req.user.ID
-
-    if (!profilePic) {
-        res.status(400)
-        throw new Error('Please provide profile picture URL')
-    }
-
-    conn.query('UPDATE USERS SET PROFILE_PIC = ? WHERE ID = ?', [profilePic, userId], (err, results) => {
-        if (err) {
-            console.error(err)
-            return res.status(500).json({ message: 'Error updating profile picture' })
-        }
-
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: 'User not found' })
-        }
-
-        res.status(200).json({
-            message: 'Profile picture updated successfully',
-            profilePic: profilePic
-        })
-    })
-})
-
-// @desc    Remove Profile Picture
-// @route   DELETE /api/users/profile-pic
-// @access  Private
-const removeProfilePic = asyncHandler(async (req, res) => {
-    const userId = req.user.ID
-
-    conn.query('UPDATE USERS SET PROFILE_PIC = NULL WHERE ID = ?', [userId], (err, results) => {
-        if (err) {
-            console.error(err)
-            return res.status(500).json({ message: 'Error removing profile picture' })
-        }
-
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ message: 'User not found' })
-        }
-
-        res.status(200).json({
-            message: 'Profile picture removed successfully'
-        })
-    })
 })
 
 // Generate JWT Token

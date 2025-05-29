@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const { registerUser, loginUser, getAll, searchUser, getUserProfile, getFollowers, getFollowing, followUser, unfollowUser } = require('../controllers/userController')
+const { registerUser, loginUser, getAll, searchUser, getUserProfile, getFollowers, getFollowing, followUser, unfollowUser, getUser } = require('../controllers/userController')
 const protect = require('../middleware/authMiddleware')
 
 router.post('/', registerUser)
 router.post('/login', loginUser)
 router.get('/me', protect, getAll)
+router.post('/anotherUser', getUser)
 
 // Search Routes
 router.post('/search', searchUser)

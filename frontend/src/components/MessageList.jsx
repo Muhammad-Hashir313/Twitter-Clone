@@ -184,6 +184,7 @@ const MessageList = () => {
                     setTimeout(scrollToBottom, 50);
                 });
             dispatch(getUser({ id: receiverId }))
+            console.log(name)
 
             // Clean up when leaving the conversation
             return () => {
